@@ -1,64 +1,76 @@
 # FORESIGHT - Resilient Supply Chain Architecture
 
-## 1. Overview
-FORESIGHT is an SAP-first, agentic AI prototype designed for the SAP Hackfest 2026. The application addresses critical supply chain disruptions (e.g., supplier failure, material shortage) through an autonomous, multi-agent reasoning layer integrated natively into the SAP ecosystem. 
+## 1. Product Vision & Core Problem
+Modern enterprises deploy autonomous AI agents across procurement, inventory, logistics, and planning. However, these agents often make individually reasonable decisions that become collectively infeasible or harmful because they lack a coordinated view of supply-chain dependencies, business constraints, and existing commitments.
 
-The core end-to-end flow is:
-**Disruption Event → Sensing → Impact Analysis → Parallel Agent Reasoning (Procurement, Inventory, Logistics, Production, Risk) → Optimization → Business Policy & Commitment Validation → Human Approval → SAP Transaction (S/4HANA) → Audit Trail → Compensation/Replan.**
+**FORESIGHT is a Decision and Commitment Control Plane for Autonomous Supply Chains.** It does not replace SAP, S/4HANA, Joule, or enterprise agents. Instead, it coordinates autonomous decisions and governs the transition from AI recommendation to real enterprise commitment.
 
-## 2. Repository Architecture
-The repository will be structured to support both local development and SAP BTP deployment:
+### 1.1 The Core Mental Model
+The FORESIGHT execution loop is:
+**SEE → UNDERSTAND → COLLABORATE → SIMULATE → COMMIT → RECOVER**
+
+### 1.2 Business Objective & Commitment Risk
+FORESIGHT does not optimize solely for the lowest cost. The conceptual decision objective accounts for:
+`Cost + Service Impact + Operational Risk + Working Capital + Commitment Risk`
+
+**Commitment Risk** is a proposed FORESIGHT concept defined as: 
+*Probability of failure × cost of irreversibility*.
+
+## 2. Five Major Intelligence Capabilities
+
+1. **Zero-Trust Reality Engine (SEE/UNDERSTAND)**: Determines if a disruption is real before triggering expensive actions using multi-source evidence fusion and anomaly detection. 
+2. **Supply Chain Knowledge Graph + Industrial Dark Pool (UNDERSTAND)**: Represents suppliers, materials, plants, and dependencies as a connected graph. The Industrial Dark Pool is a privacy-aware mechanism for discovering compatible idle capacity before creating new external supply.
+3. **Multi-Agent Swarm + Dynamic BOM (COLLABORATE)**: Specialized, structured tool-calling agents (Procurement, Inventory, Logistics, Production, Risk) operate on shared state. Production Agents can evaluate approved alternative BOMs under engineering constraints.
+4. **Simulation + Collective Intelligence (SIMULATE)**: Candidate recovery plans are tested against uncertainty using Monte Carlo simulation, constraint solving, and agent-based game-theoretic reasoning to evaluate second-order effects.
+5. **Safe Execution / Commitment Control (COMMIT/RECOVER)**: Evaluates business policies, financial constraints, and commitment exposure before execution. Uses Policy-as-Code, human approval for high-risk decisions, and Saga-style compensating actions for recovery.
+
+### 2.1 The Commitment Graph
+In addition to the physical Supply Chain Knowledge Graph, FORESIGHT introduces a **Commitment Graph** to reason about business commitments:
+`Purchase Requisition → Purchase Order → Reservation → Freight/Transportation → Production Order → Delivery → Customer Commitment`
+FORESIGHT asks: *"What business commitments will this decision create?"*
+
+## 3. Latency Architecture
+FORESIGHT is an event-driven, asynchronous, parallel architecture. Independent agents execute concurrently. Knowledge-graph state is reusable. Simulations are selective. 
+**Core Principle**: *"We do not add five waiting rooms. We add five parallel intelligence layers and one controlled commitment gate."* Only dependency-critical validation blocks final commitment.
+
+## 4. SAP-First Architecture
+SAP is the enterprise execution environment, not a logo on a Python application. SAP-native technologies are used for SAP-native concerns.
+
+*   **SAP S/4HANA**: Business data and actual ERP transaction execution (where verified).
+*   **SAP BTP / CAP**: The SAP-facing application and service layer. Exposes FORESIGHT entities and choreographs drafts/approvals.
+*   **SAP HANA Cloud**: FORESIGHT-specific persistence (Disruption, RecoveryPlan, AuditEvent).
+*   **SAPUI5 / Fiori**: Enterprise decision console for human-in-the-loop approval.
+*   **SAP Build Work Zone**: Enterprise application entry point (where available).
+*   **SAP AI Launchpad / Generative AI Hub**: Governed LLM access (where verified).
+*   **SAP Integration Suite / Event Mesh**: Event-driven integration (where verified).
+*   **Python Runtime**: Dedicated exclusively to agent orchestration, graph analysis, mathematical optimization, and simulation. The Antigravity SDK is a development tool only and is **not** a runtime dependency.
+
+## 5. Repository Architecture
 
 ```text
 foresight-sap-hackfest-2026/
-├── sap-cap-backend/         # SAP Cloud Application Programming (CAP) Model
-│   ├── app/                 # Fiori Elements / SAPUI5 app configurations
-│   ├── db/                  # CDS Data Models (schema.cds) & SAP HANA Cloud artifacts
-│   ├── srv/                 # Service Definitions & Business Logic (service.cds, .js)
-│   └── package.json         # Node.js dependencies
-├── sap-ui5-frontend/        # Custom SAPUI5 Freestyle / Fiori Elements App (Enterprise UI)
-│   ├── webapp/              # UI5 source code, views, controllers
-│   └── ui5.yaml             # UI5 tooling configuration
-├── agent-orchestration/     # Multi-Agent Reasoning Layer (Python)
-│   ├── agents/              # Procurement, Logistics, Risk, Inventory Agents
-│   ├── tools/               # Tools for querying CAP APIs & S/4HANA APIs
-│   ├── core/                # LLM orchestration and workflow logic
-│   └── requirements.txt     # Python dependencies
-├── mock-s4hana/             # (Optional) Local mock server for S/4HANA OData APIs
-├── mta.yaml                 # Multi-Target Application descriptor for BTP Deployment
-└── docs/                    # Architecture and implementation documentation
+├── sap-cap-backend/         # SAP CAP Model (Node.js/Java) & SAP HANA Cloud
+│   ├── app/                 # Fiori / SAPUI5 configurations (Decision Console)
+│   ├── db/                  # CDS Data Models (Source of truth for FORESIGHT entities)
+│   ├── srv/                 # Service Definitions & S/4HANA Adapter routing
+│   └── mock-s4hana/         # Realistic mock service for unverified/unavailable S/4 APIs
+├── sap-ui5-frontend/        # SAPUI5 App (Enterprise UI / Inbox)
+│   └── webapp/              # UI5 source code
+├── agent-runtime/           # Python Agent Reasoning Layer
+│   ├── agents/              # Swarm: Procurement, Logistics, Risk, Inventory, Production
+│   ├── intelligence/        # Zero-Trust Reality, Graph traversal, Simulation math
+│   └── core/                # Clean LLM orchestration (routing to SAP Gen AI Hub)
+├── mta.yaml                 # BTP Deployment configuration
+└── docs/                    # Architecture and integration documentation
 ```
 
-## 3. SAP Capability Requirements
-To implement FORESIGHT authentically within the SAP ecosystem, the following SAP BTP capabilities and services are required:
+## 6. MVP vs. Advanced Extensions Boundary
+The mandatory working vertical slice MVP focuses strictly on one thin thread through the five pillars:
+*Supplier failure → disruption sensing → impact analysis → parallel swarm (procurement/inventory/logistics/risk) → feasible recovery plan → business-policy/commitment validation → human approval → SAP/mock-SAP transaction → audit trail.*
 
-*   **SAP Business Application Studio (BAS)**: Primary IDE for CAP, UI5, and HANA development.
-*   **SAP Cloud Application Programming Model (CAP)**: Core application layer (Node.js/Java) for defining OData V4 services, handling business logic, and choreographing actions.
-*   **SAP HANA Cloud**: High-performance persistence layer for audit trails, caching, and custom app data via HDI Containers.
-*   **SAPUI5 / SAP Fiori Elements**: Enterprise-grade UI framework for the human-in-the-loop approval inbox.
-*   **SAP Build Work Zone / Launchpad Service**: Portal for accessing the Fiori application.
-*   **SAP Destination & Connectivity Service**: Securely routing requests from the BTP environment to the S/4HANA system (Cloud or On-Premise).
-*   **SAP S/4HANA**: The core digital core providing standard APIs (e.g., `API_PURCHASEORDER_PROCESS_SRV`, `API_MATERIAL_STOCK_SRV`, `API_SUPPLIER`).
-*   **SAP AI Core / Generative AI Hub**: Centralized proxy and orchestration layer for interacting with LLMs securely, adhering to enterprise AI guardrails.
+Advanced features (Zero-Trust Reality Engine, Dark Pool, Dynamic BOM, Game-Theoretic Simulation, full Saga recovery) are explicit extensions layered progressively and must never block the MVP.
 
-## 4. Components Implemented Locally
-During rapid prototyping and early development, the following can be executed locally without requiring continuous BTP access:
-*   **CAP Backend**: Running with an embedded **SQLite** database (`cds watch`) instead of SAP HANA Cloud.
-*   **Agent Orchestration**: Running as a local Python process, interacting with local LLMs or direct API keys (before migrating to SAP Generative AI Hub).
-*   **SAPUI5 Frontend**: Served locally using UI5 Tooling (`ui5 serve`), consuming the local CAP OData services.
-*   **S/4HANA Integration**: Mocked locally within the CAP application or using a dedicated mock server to simulate S/4HANA OData V2/V4 responses.
-
-## 5. Components Running in SAP BAS / BTP
-The following components mandate deployment to SAP BTP for staging, integration testing, and the final Hackfest demonstration:
-*   **SAP HANA Cloud HDI Containers**: Required for advanced HANA features and persistent storage.
-*   **S/4HANA Connectivity**: Actual integration with the practice S/4HANA system using the BTP Destination service (which cannot easily be fully emulated locally without VPNs/Cloud Connectors).
-*   **SAP Generative AI Hub Integration**: Routing the Agent Orchestration LLM calls through SAP's AI endpoints for compliance and auditing.
-*   **BTP AppRouter & XSUAA**: For secure enterprise authentication and routing between the UI, CAP backend, and Agent layer.
-
-## 6. Integration Contracts
-The system relies on clear API boundaries between its primary tiers:
-
-*   **UI5 Frontend ↔ CAP Backend**: Standard **OData V4**. CAP provides Draft choreography out-of-the-box for human-in-the-loop approvals (e.g., "Draft Plan" -> "Approved Plan").
-*   **Agent Orchestration ↔ CAP Backend**: **REST / HTTP**. The agent layer queries the CAP backend to fetch current context (Sensing/Impact Analysis). The agent layer POSTs back optimization plans and proposed resolutions as JSON payloads to CAP custom action endpoints.
-*   **Agent Orchestration ↔ SAP Generative AI Hub**: **REST (OpenAI API compatible)**. Agent framework communicates with SAP AI Core deployment endpoints.
-*   **CAP Backend ↔ SAP S/4HANA**: Standard **OData V2/V4**. CAP uses destination-based routing (via `@sap-cloud-sdk/http-client` or CAP's remote service consumption) to execute the final transaction (e.g., creating a PO) once human approval is granted.
+## 7. No-Hallucination SAP Rules
+1. **Never Invent APIs**: Every SAP capability, API, business object, service, and permission is treated as **UNKNOWN** until explicitly verified in the actual SAP practice environment.
+2. **Never Claim Untested Integrations**: If an integration has not been tested against a live system, it must be documented as simulated or mocked.
+3. **S/4HANA is an Adapter**: S/4HANA is treated as an integration adapter. The architecture supports switching between verified live S/4HANA APIs and a realistic mock S/4 service with the exact same contract.
