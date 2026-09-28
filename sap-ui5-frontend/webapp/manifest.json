@@ -8,7 +8,12 @@
       "version": "1.0.0"
     },
     "title": "FORESIGHT Decision Console",
-    "description": "Decision and Commitment Control Plane"
+    "description": "Decision and Commitment Control Plane",
+    "sourceTemplate": {
+      "id": "@sap/ux-app-migrator:freestyle",
+      "version": "1.33.0",
+      "toolsId": "ee8aca93-87d0-46b8-82c9-b904ce3356ff"
+    }
   },
   "sap.ui": {
     "technology": "UI5",
