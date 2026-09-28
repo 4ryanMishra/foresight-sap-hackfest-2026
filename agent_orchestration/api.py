@@ -17,8 +17,15 @@ app = FastAPI(title="FORESIGHT Agent Orchestrator")
 class MockLLMProvider(LLMProvider):
     pass # Currently using deterministic logic in agents
 
+import os
+from agent_orchestration.sap_ai_provider import SapGenAiHubProvider
+
 # Global instances
-llm = MockLLMProvider()
+if os.environ.get('USE_SAP_AI_HUB') == 'true':
+    llm = SapGenAiHubProvider()
+else:
+    llm = MockLLMProvider()
+
 opt = CpSatOptimizer()
 pol = PolicyService()
 orchestrator = OrchestratorAgent(llm_provider=llm, opt_service=opt, policy_service=pol)

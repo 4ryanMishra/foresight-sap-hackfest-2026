@@ -22,29 +22,19 @@ These features represent the full product vision but are explicitly excluded fro
 *   **Saga-Style Recovery**: Automated compensating transactions if reality changes post-commitment.
 *   **SAP Event Mesh**: Native pub/sub event consumption.
 
-## 3. Phase 1 Build Plan (Foundation & SAP Source of Truth)
+## 3. Phase 1 Build Plan (Foundation & SAP Source of Truth) [✅ COMPLETE]
 Phase 1 focuses entirely on establishing the SAP CAP/HANA layer as the strict source of truth for the Decision Control Plane.
+(Completed via local SQLite and static UI5 serving)
 
-*   **Step 1.1**: Initialize the SAP CAP project (`sap-cap-backend`).
-*   **Step 1.2**: Define the CDS Data Models representing the Control Plane state: `Disruption`, `RecoveryPlan`, `AgentAction`, `Approval`, `Commitment`, and `AuditEvent`.
-*   **Step 1.3**: Implement the OData V4 services exposing these entities, specifically configuring Draft choreography for the `RecoveryPlan` to support the Human Approval gate.
-*   **Step 1.4**: Scaffold the SAPUI5/Fiori Elements application on top of the CAP OData service to serve as the Decision Console.
-*   **Step 1.5**: Deploy to local SQLite and verify the manual creation, drafting, and approval of a `RecoveryPlan` without any AI involvement yet.
+## 4. Phase 2 Build Plan (S/4HANA Adapter & Mocking) [✅ COMPLETE]
+(Completed via mock-s4hana and Python/CAP contracts)
 
-## 4. Phase 2 Build Plan (S/4HANA Adapter & Mocking)
-*   **Step 2.1**: Define the rigid integration contracts expected from S/4HANA (e.g., fetching a material, reading stock, creating a PO).
-*   **Step 2.2**: Build the `mock-s4hana` service locally that perfectly implements this contract.
-*   **Step 2.3**: Implement the CAP routing logic to direct S/4 queries to either the destination service or the local mock.
+## 5. Phase 3 Build Plan (Python Agent Runtime & Parallel Latency) [✅ COMPLETE]
+(Completed via local FastAPI Orchestrator, Mock LLMs, and Contract wiring)
 
-## 5. Phase 3 Build Plan (Python Agent Runtime & Parallel Latency)
-*   **Step 3.1**: Establish the clean Python runtime environment (No Antigravity SDK).
-*   **Step 3.2**: Implement the parallel execution framework ensuring agents do not run as sequential waiting rooms.
-*   **Step 3.3**: Implement the basic Supply Chain Knowledge Graph state management.
-*   **Step 3.4**: Build the Procurement, Inventory, Logistics, and Risk structured tool-calling agents.
-*   **Step 3.5**: Integrate with SAP Generative AI Hub API via standard REST clients.
-
-## 6. Phase 4 Build Plan (Integration & Live SAP Environment Verification)
-*   **Step 4.1**: Connect the Python runtime to the local CAP instance and run the end-to-end simulated trigger.
-*   **Step 4.2**: Execute manual environment checks in the SAP practice system (see Manual Verification list).
-*   **Step 4.3**: Switch S/4HANA adapters from mock to verified live APIs via BTP Destinations.
-*   **Step 4.4**: Deploy CAP/UI5 to SAP BTP.
+## 6. Phase 4 Build Plan (Integration & Live SAP Environment Verification) [⏳ IN PROGRESS]
+*   **Step 4.1 [✅ COMPLETE]**: Connect the Python runtime to the local CAP instance and run the end-to-end simulated trigger.
+*   **Step 4.2 [✅ COMPLETE]**: Prepare BTP Deployment descriptors (MTA, HANA HDI, XSUAA) and SAP AI Hub abstractions.
+*   **Step 4.3 [PENDING]**: Execute manual environment checks in the SAP practice system (see Manual Verification list).
+*   **Step 4.4 [PENDING]**: Switch S/4HANA adapters from mock to verified live APIs via BTP Destinations.
+*   **Step 4.5 [PENDING]**: Deploy CAP/UI5 to SAP BTP and bind live services.

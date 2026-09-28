@@ -14,8 +14,14 @@ from optimization.policy import PolicyService
 class MockLLMProvider(LLMProvider):
     pass # Currently using deterministic logic in agents
 
+from agent_orchestration.sap_ai_provider import SapGenAiHubProvider
+
 async def run_local_slice():
-    llm = MockLLMProvider()
+    if os.environ.get('USE_SAP_AI_HUB') == 'true':
+        llm = SapGenAiHubProvider()
+    else:
+        llm = MockLLMProvider()
+
     opt = CpSatOptimizer()
     pol = PolicyService()
 

@@ -141,13 +141,15 @@ module.exports = cds.service.impl(async function() {
             details: `Plan approved by ${reviewer}: ${notes}`
         });
 
-        // Execute actions against S/4 Mock
+        // Execute actions against S/4
         try {
+            const { getS4Adapter } = require('./s4_adapter');
+            const s4Adapter = getS4Adapter();
+
             const actions = await SELECT.from('foresight.AgentAction').where({ recoveryPlan_ID: planId });
             for (let action of actions) {
                 if (action.actionType === 'CREATE_PO') {
-                    console.log(`[CAP] Executing PO Creation for ${action.targetSupplier_ID}...`);
-                    await axios.post(`${S4_MOCK_URL}/API_PURCHASEORDER_PROCESS_SRV/A_PurchaseOrder`, {
+                    await s4Adapter.executePurchaseOrderCreation({
                         Supplier: action.targetSupplier_ID,
                         Material: 'MAT-100',
                         OrderQuantity: action.quantity
