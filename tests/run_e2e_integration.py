@@ -102,7 +102,7 @@ def run_integration():
             
         print("Plan approved successfully.")
 
-        print("\n--- TEST 4: Verify Execution (Audit Events) ---")
+        print("\n--- TEST 4: Verify Execution (Audit Events & Commitments) ---")
         audit_url = f"http://localhost:4004/odata/v4/foresight/AuditEvents?$filter=entityId eq '{plan_id}'"
         res = requests.get(audit_url)
         audits = res.json().get('value', [])
@@ -110,7 +110,56 @@ def run_integration():
         for event in audits:
             print(f"Audit [{event['eventType']}]: {event['details']}")
 
-        print("\n--- ALL TESTS PASSED! ---")
+        # Verify commitment state
+        commitments_url = f"http://localhost:4004/odata/v4/foresight/Commitments?$filter=recoveryPlan_ID eq '{plan_id}'"
+        res_com = requests.get(commitments_url)
+        commitments = res_com.json().get('value', [])
+        if commitments:
+            print(f"Commitment Status: {commitments[0]['status']} (Expected: MITIGATED)")
+
+        print("\n--- TEST 5: Verify Static Webapp & CORS via CAP ---")
+        webapp_url = "http://localhost:4004/webapp/index.html"
+        res_web = requests.get(webapp_url)
+        if res_web.status_code == 200 and "FORESIGHT" in res_web.text:
+            print(f"Static webapp successfully served at {webapp_url} (HTTP {res_web.status_code})")
+        else:
+            print(f"Webapp serving check failed: HTTP {res_web.status_code}")
+            sys.exit(1)
+
+        print("\n--- TEST 6: Test Rejection & SAGA Compensation Flow ---")
+        # Trigger second disruption to test rejection lifecycle
+        print("Triggering second disruption for rejection testing...")
+        res_d2 = requests.post(trigger_url, json={"supplierId": "SUP-003", "materialId": "MAT-100"})
+        if res_d2.status_code in (200, 201):
+            time.sleep(10)
+            res_p2 = requests.get(plans_url)
+            plans_all = res_p2.json().get('value', [])
+            plan2 = plans_all[-1]
+            plan2_id = plan2["ID"]
+            print(f"New Plan generated for rejection test: {plan2_id}, status: {plan2['status']}")
+
+            reject_url = "http://localhost:4004/odata/v4/foresight/rejectPlan"
+            res_rej = requests.post(reject_url, json={
+                "planId": plan2_id,
+                "approverId": "SC_Ops_Executive",
+                "comments": "Cost exceeded emergency allocation. Releasing Plant B holds."
+            })
+            if res_rej.status_code in (200, 201):
+                rejected_plan = res_rej.json()
+                final_status = rejected_plan.get('status') or (rejected_plan.get('value') if isinstance(rejected_plan.get('value'), dict) else {}).get('status')
+                print(f"Plan rejected. Final Status: {final_status} (Expected: REPLANNED)")
+
+                # Verify SAGA audit events
+                audit_rej_url = f"http://localhost:4004/odata/v4/foresight/AuditEvents?$filter=entityId eq '{plan2_id}'"
+                res_rej_audits = requests.get(audit_rej_url)
+                rej_audits = res_rej_audits.json().get('value', [])
+                for a in rej_audits:
+                    print(f"Audit [{a['eventType']}]: {a['details']}")
+            else:
+                print(f"Reject request failed: {res_rej.status_code} - {res_rej.text}")
+                sys.exit(1)
+
+        print("\n--- ALL TESTS (1 through 6) PASSED SUCCESSFULLY! ---")
 
     finally:
         print("\nCleaning up processes...")

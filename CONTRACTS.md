@@ -41,7 +41,7 @@ Internal contract between Swarm Agents and Optimizer.
 **Source of Truth:** SAP CAP (`foresight.RecoveryPlan`)
 - `ID`: String (UUID)
 - `disruption_ID`: String
-- `status`: String (`"DRAFT" | "PENDING_APPROVAL" | "APPROVED" | "REJECTED" | "EXECUTED" | "EXECUTION_FAILED"`)
+- `status`: String (`"DRAFT" | "PENDING_APPROVAL" | "APPROVED" | "REJECTED" | "EXECUTING" | "EXECUTED" | "COMPENSATING" | "REPLANNED" | "EXECUTION_FAILED"`)
 - `totalCost`: Decimal
 - `serviceImpact`: String
 - `commitmentRisk`: Decimal
@@ -78,12 +78,23 @@ Internal contract between Swarm Agents and Optimizer.
 ## 8. AuditEvent
 **Source of Truth:** SAP CAP (`foresight.AuditEvent`)
 - `ID`: String (UUID)
-- `entityName`: String (e.g., `"RecoveryPlan"`, `"Supplier"`)
+- `entityName`: String (e.g., `"RecoveryPlan"`, `"Supplier"`, `"SagaCoordinator"`)
 - `entityId`: String
-- `eventType`: String (e.g., `"PLAN_APPROVED"`, `"EXECUTION_SUCCESS"`)
+- `eventType`: String (`"DISRUPTION_TRIGGERED" | "PLAN_APPROVED" | "PLAN_REJECTED" | "SAGA_COMPENSATION" | "REPLAN_INITIATED" | "EXECUTION_SUCCESS" | "EXECUTION_FAILED"`)
 - `details`: String
 
-## 9. S4Adapter Contract (Mock S/4HANA)
+## 9. ForesightService Actions (CAP Execution Gate)
+**Source of Truth:** SAP CAP (`sap-cap-backend/srv/service.cds`)
+- **`triggerDisruption(supplierId: String, materialId: String) returns Disruptions`**
+  - Triggers supplier disruption event, gathers S/4 context, executes Python Swarm & CP-SAT Optimizer, and stages RecoveryPlan.
+- **`approvePlan(planId: String, approverId: String, comments: String) returns RecoveryPlans`**
+  - Approves staged plan, locks immutable audit record, executes PO creation against Mock S/4HANA, transitions status to `EXECUTED`, and marks commitments `MITIGATED`.
+- **`rejectPlan(planId: String, approverId: String, comments: String) returns RecoveryPlans`**
+  - Rejects staged plan, logs audit event, triggers SAGA compensation (`COMPENSATING`), releases temporary inventory holds, transitions status to `REPLANNED`, and marks commitments `FAILED`.
+- **`failExecution(planId: String, reason: String) returns RecoveryPlans`**
+  - Simulates transaction failure, executes automated SAGA compensation rollback, transitions status to `REPLANNED`.
+
+## 10. S4Adapter Contract (Mock S/4HANA)
 **Source of Truth:** Express API (`mock-s4hana/index.js`)
 ### Context Fetch
 - **Endpoint**: `GET /sap/opu/odata/sap/API_SUPPLIER/A_Supplier`

@@ -18,9 +18,12 @@
         </div>
       </div>
       <div class="fs-header-meta">
+        <button id="btn-trigger-disruption" class="fs-btn fs-btn-secondary" onclick="triggerDisruptionDemo()" style="padding:4px 10px;font-size:11px;font-weight:600;background:#ffffff;border:1px solid #cbd5e1;cursor:pointer;">
+          ⚡ Trigger Disruption
+        </button>
         <div class="fs-badge fs-badge-healthy">
           <span class="fs-badge-dot"></span>
-          <span>SYSTEM ACTIVE / MONITORING</span>
+          <span id="live-connection-badge">SYSTEM ACTIVE (CAP LIVE)</span>
         </div>
         <div class="fs-badge fs-badge-neutral">
           <span>Adapter: S/4HANA (LOCAL_MOCK)</span>
@@ -48,25 +51,25 @@
       <div class="fs-kpi-card">
         <span class="fs-kpi-label">Active Disruption</span>
         <div class="fs-kpi-value-row">
-          <span class="fs-kpi-value" style="color:var(--fs-critical);">SUP-003</span>
-          <span class="fs-badge fs-badge-critical" style="font-size:9.5px;padding:1px 4px;">CRITICAL</span>
+          <span id="kpi-disruption-val" class="fs-kpi-value" style="color:var(--fs-critical);">SUP-001</span>
+          <span id="kpi-disruption-badge" class="fs-badge fs-badge-critical" style="font-size:9.5px;padding:1px 4px;">CRITICAL</span>
         </div>
-        <span class="fs-kpi-subtext">Risky Supplier Inc. (Outage)</span>
+        <span id="kpi-disruption-subtext" class="fs-kpi-subtext">Acme Corp (Outage)</span>
       </div>
 
       <div class="fs-kpi-card">
         <span class="fs-kpi-label">Affected Material</span>
         <div class="fs-kpi-value-row">
-          <span class="fs-kpi-value">MAT-100</span>
+          <span id="kpi-material-val" class="fs-kpi-value">MAT-100</span>
           <span class="fs-badge fs-badge-neutral" style="font-size:9.5px;padding:1px 4px;">Semiconductor</span>
         </div>
-        <span class="fs-kpi-subtext">Microcontroller X (Rev 4.2)</span>
+        <span id="kpi-material-subtext" class="fs-kpi-subtext">Microcontroller X (Rev 4.2)</span>
       </div>
 
       <div class="fs-kpi-card">
         <span class="fs-kpi-label">Net Shortage</span>
         <div class="fs-kpi-value-row">
-          <span class="fs-kpi-value">5,000 <span style="font-size:12px;font-weight:500;color:var(--fs-text-muted);">PC</span></span>
+          <span id="kpi-shortage-val" class="fs-kpi-value">5,000 <span style="font-size:12px;font-weight:500;color:var(--fs-text-muted);">PC</span></span>
         </div>
         <span class="fs-kpi-subtext">Delivery SLA: Oct 15, 2026</span>
       </div>
@@ -74,7 +77,7 @@
       <div class="fs-kpi-card">
         <span class="fs-kpi-label">Recommended Cost</span>
         <div class="fs-kpi-value-row">
-          <span class="fs-kpi-value">$157,000</span>
+          <span id="kpi-cost-val" class="fs-kpi-value">$157,000</span>
           <span class="fs-badge fs-badge-healthy" style="font-size:9.5px;padding:1px 4px;">-30.2% vs Spot</span>
         </div>
         <span class="fs-kpi-subtext">Saved $68,000 via internal stock</span>
@@ -83,7 +86,7 @@
       <div class="fs-kpi-card">
         <span class="fs-kpi-label">Commitment Risk</span>
         <div class="fs-kpi-value-row">
-          <span class="fs-kpi-value" style="color:var(--fs-healthy);">$23,550</span>
+          <span id="kpi-risk-val" class="fs-kpi-value" style="color:var(--fs-healthy);">$23,550</span>
           <span class="fs-badge fs-badge-healthy" style="font-size:9.5px;padding:1px 4px;">15.0% Fail Prob</span>
         </div>
         <span class="fs-kpi-subtext">P95 Lead Time: 6.7 Days</span>
@@ -337,7 +340,7 @@
             </div>
 
             <!-- SAP S/4HANA Commitment Preview -->
-            <div class="fs-erp-preview">
+            <div class="fs-erp-preview" id="erp-preview-staged">
               <div class="fs-erp-preview-title">
                 <span>SAP S/4HANA TRANSACTION DRAFT</span>
                 <span style="color:#0f766e;font-weight:600;">STAGED (SAGA)</span>
@@ -390,7 +393,7 @@
                   <th style="width:90px;">Confidence</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="telemetry-tbody">
                 <tr>
                   <td style="font-family:monospace;color:var(--fs-text-muted);">08:11:02</td>
                   <td><span class="fs-agent-badge fs-agent-optm">DisruptionAgent</span></td>
@@ -853,8 +856,16 @@
     </section>
   </div>
 
-  <!-- Interactive JavaScript Engine -->
+  <!-- Interactive JavaScript Engine (Connected to CAP OData V4) -->
   <script>
+    const CAP_BASE_URL = window.location.origin.includes(':4004') ?
+      '/odata/v4/foresight' :
+      'http://localhost:4004/odata/v4/foresight';
+
+    let activePlanId = null;
+    let activeDisruptionId = null;
+    let currentPlan = null;
+
     // Tab Navigation
     function activateTab(tab) {
       document.querySelectorAll('.fs-nav-item').forEach(i => {
@@ -880,21 +891,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('tab')) {
       activateTab(urlParams.get('tab'));
-    }
-    if (urlParams.get('state') === 'approved') {
-      const btn = document.getElementById('btn-approve');
-      btn.innerHTML = '&#10003; Plan Committed';
-      btn.style.background = '#15803d';
-      document.getElementById('kpi-gate-status').textContent = 'COMMITTED (PO-SIM-9482)';
-      document.getElementById('kpi-gate-status').style.color = '#0f766e';
-      document.getElementById('badge-human-gate').textContent = 'APPROVED';
-      document.getElementById('badge-human-gate').className = 'fs-badge fs-badge-healthy';
-      document.getElementById('saga-state-badge').textContent = 'Stage 6 / 6';
-      document.getElementById('saga-step-approval').className = 'fs-saga-step completed';
-      document.getElementById('saga-step-approval').querySelector('.fs-saga-step-icon').innerHTML = '&#10003;';
-      document.getElementById('saga-step-commit').className = 'fs-saga-step completed';
-      document.getElementById('saga-step-commit').querySelector('.fs-saga-step-icon').innerHTML = '&#10003;';
-      document.getElementById('saga-step-monitor').className = 'fs-saga-step active';
     }
 
     // Node Inspector
@@ -924,9 +920,11 @@
       });
 
       if (planId === 'A') {
-        document.getElementById('metric-cost').textContent = '$157,000';
+        const cost = currentPlan ? '$' + Number(currentPlan.totalCost).toLocaleString() : '$157,000';
+        const risk = currentPlan ? '$' + Number(currentPlan.commitmentRisk).toLocaleString() : '$23,550';
+        document.getElementById('metric-cost').textContent = cost;
         document.getElementById('metric-service').textContent = '0 Days Delay';
-        document.getElementById('metric-risk').textContent = '$23,550';
+        document.getElementById('metric-risk').textContent = risk;
         document.getElementById('metric-lead').textContent = '6.7 Days';
       } else if (planId === 'B') {
         document.getElementById('metric-cost').textContent = '$245,000';
@@ -941,59 +939,361 @@
       }
     }
 
-    // Approval Action
-    function approvePlan() {
-      const btn = document.getElementById('btn-approve');
-      btn.disabled = true;
-      btn.innerHTML = '<span style="display:inline-block;animation:spin 1s linear infinite;">&#8987;</span> Committing to S/4HANA...';
-      
-      setTimeout(() => {
-        btn.innerHTML = '&#10003; Plan Committed';
-        btn.style.background = '#15803d';
+    // Fetch and Bind Live Data from CAP
+    async function loadLiveConsoleData() {
+      try {
+        const [disrRes, auditRes] = await Promise.all([
+          fetch(CAP_BASE_URL + '/Disruptions?$expand=recoveryPlan($expand=actions,approvals,commitments)&$orderby=createdAt desc&$top=1'),
+          fetch(CAP_BASE_URL + '/AuditEvents?$orderby=createdAt desc&$top=20')
+        ]);
 
-        // Update KPI
-        document.getElementById('kpi-gate-status').textContent = 'COMMITTED (PO-SIM-9482)';
-        document.getElementById('kpi-gate-status').style.color = '#0f766e';
-        document.getElementById('badge-human-gate').textContent = 'APPROVED';
-        document.getElementById('badge-human-gate').className = 'fs-badge fs-badge-healthy';
+        const disrData = await disrRes.json();
+        const auditData = await auditRes.json();
 
-        // Update Saga state
-        document.getElementById('saga-state-badge').textContent = 'Stage 6 / 6';
-        document.getElementById('saga-step-approval').className = 'fs-saga-step completed';
-        document.getElementById('saga-step-approval').querySelector('.fs-saga-step-icon').innerHTML = '&#10003;';
-        document.getElementById('saga-step-commit').className = 'fs-saga-step completed';
-        document.getElementById('saga-step-commit').querySelector('.fs-saga-step-icon').innerHTML = '&#10003;';
-        document.getElementById('saga-step-monitor').className = 'fs-saga-step active';
+        const disruptions = disrData.value || [];
+        const auditEvents = auditData.value || [];
 
-        // Append to Audit Log
-        const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
-        const tbody = document.getElementById('audit-tbody');
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="font-family:monospace;font-size:11.5px;">${now}</td>
-          <td>SC_Ops_Executive</td>
-          <td><span class="fs-badge fs-badge-healthy">PLAN_APPROVED_COMMITTED</span></td>
-          <td>Plan A approved. Executed PO-SIM-9482 ($148.5K) and STO-1204 ($6K). Audit locked.</td>
-          <td>RecoveryPlan:PLAN-A</td>
-          <td style="font-family:monospace;font-size:10.5px;color:var(--fs-text-muted);">0x71fa...11c4</td>
-        `;
-        tbody.insertBefore(tr, tbody.firstChild);
+        // Connection indicator
+        const badge = document.getElementById('live-connection-badge');
+        if (badge) {
+          badge.textContent = 'SYSTEM ACTIVE (CAP LIVE)';
+          badge.parentElement.className = 'fs-badge fs-badge-healthy';
+        }
 
-        alert('SUCCESS: Recovery Plan Approved by Executive.\n\n• S/4HANA Purchase Order PO-SIM-9482 Created (3,300 PC from SUP-002)\n• Stock Transport Order STO-1204 Created (1,200 PC from Plant B)\n• Internal Reservation Committed (500 PC at Plant A)\n• Saga Execution State: Stage 6 (Active Telemetry Monitoring)\n• Immutable Audit Record Written to SAP HANA Cloud');
-      }, 700);
+        if (disruptions.length > 0) {
+          const d = disruptions[0];
+          activeDisruptionId = d.ID;
+          currentPlan = d.recoveryPlan || null;
+          activePlanId = currentPlan ? currentPlan.ID : null;
+
+          // 1. Update KPIs
+          const disrupVal = document.getElementById('kpi-disruption-val');
+          if (disrupVal) disrupVal.textContent = d.impactedSupplier_ID || 'SUP-001';
+
+          const matVal = document.getElementById('kpi-material-val');
+          if (matVal) matVal.textContent = d.impactedMaterial_ID || 'MAT-100';
+
+          if (currentPlan) {
+            const costVal = document.getElementById('kpi-cost-val');
+            if (costVal) costVal.textContent = '$' + Number(currentPlan.totalCost || 157000).toLocaleString();
+
+            const riskVal = document.getElementById('kpi-risk-val');
+            if (riskVal) riskVal.textContent = '$' + Number(currentPlan.commitmentRisk || 23550).toLocaleString();
+
+            const metricCost = document.getElementById('metric-cost');
+            if (metricCost) metricCost.textContent = '$' + Number(currentPlan.totalCost || 157000).toLocaleString();
+
+            const metricRisk = document.getElementById('metric-risk');
+            if (metricRisk) metricRisk.textContent = '$' + Number(currentPlan.commitmentRisk || 23550).toLocaleString();
+
+            // Gate Status
+            const gateVal = document.getElementById('kpi-gate-status');
+            const humanBadge = document.getElementById('badge-human-gate');
+            const approveBtn = document.getElementById('btn-approve');
+
+            if (currentPlan.status === 'EXECUTED') {
+              if (gateVal) {
+                gateVal.textContent = 'COMMITTED (PO-SIM-9482)';
+                gateVal.style.color = '#0f766e';
+              }
+              if (humanBadge) {
+                humanBadge.textContent = 'APPROVED';
+                humanBadge.className = 'fs-badge fs-badge-healthy';
+              }
+              if (approveBtn) {
+                approveBtn.disabled = true;
+                approveBtn.innerHTML = '&#10003; Plan Committed';
+                approveBtn.style.background = '#15803d';
+              }
+              // Advance SAGA UI
+              updateSagaUI('EXECUTED');
+            } else if (currentPlan.status === 'REPLANNED' || currentPlan.status === 'REJECTED') {
+              if (gateVal) {
+                gateVal.textContent = 'REPLANNED (SAGA COMPENSATED)';
+                gateVal.style.color = '#dc2626';
+              }
+              if (humanBadge) {
+                humanBadge.textContent = 'REPLAN INITIATED';
+                humanBadge.className = 'fs-badge fs-badge-critical';
+              }
+              if (approveBtn) {
+                approveBtn.disabled = true;
+                approveBtn.innerHTML = 'Re-planned';
+                approveBtn.style.background = '#64748b';
+              }
+              updateSagaUI('REPLANNED');
+            } else if (currentPlan.status === 'PENDING_APPROVAL') {
+              if (gateVal) {
+                gateVal.textContent = 'Pending Approval';
+                gateVal.style.color = 'var(--fs-warning)';
+              }
+              if (humanBadge) {
+                humanBadge.textContent = 'ACTION REQUIRED';
+                humanBadge.className = 'fs-badge fs-badge-warning';
+              }
+              if (approveBtn) {
+                approveBtn.disabled = false;
+                approveBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Approve Recovery Plan';
+                approveBtn.style.background = '';
+              }
+              updateSagaUI('PENDING_APPROVAL');
+            }
+
+            // 2. Render Staged Actions Preview
+            const stagedContainer = document.getElementById('erp-preview-staged');
+            if (stagedContainer && currentPlan.actions) {
+              let html = `
+                <div class="fs-erp-preview-title">
+                  <span>SAP S/4HANA TRANSACTION DRAFT</span>
+                  <span style="color:#0f766e;font-weight:600;">${currentPlan.status === 'EXECUTED' ? 'COMMITTED (S/4HANA)' : 'STAGED (SAGA)'}</span>
+                </div>`;
+              currentPlan.actions.forEach(act => {
+                if (act.actionType === 'CREATE_PO') {
+                  html += `<div>• POST /API_PURCHASEORDER_PROCESS_SRV</div>
+                  <div style="margin-left:8px;color:var(--fs-text-muted);">Vendor: ${act.targetSupplier_ID || 'SUP-002'} | Mat: MAT-100 | Qty: ${Number(act.quantity).toLocaleString()} PC | $${Number(act.estimatedCost).toLocaleString()}</div>`;
+                } else if (act.actionType === 'STOCK_TRANSFER') {
+                  html += `<div>• POST /API_MATERIAL_STOCK_SRV (Stock Transport)</div>
+                  <div style="margin-left:8px;color:var(--fs-text-muted);">Plant: ${act.targetPlant_ID || 'Plant B'} &rarr; Plant A | Qty: ${Number(act.quantity).toLocaleString()} PC | $${Number(act.estimatedCost).toLocaleString()}</div>`;
+                }
+              });
+              stagedContainer.innerHTML = html;
+            }
+
+            // 3. Render Parallel Agent Telemetry Table (Canonical AgentAction & Audit contract)
+            const telemTbody = document.getElementById('telemetry-tbody');
+            if (telemTbody) {
+              let rows = '';
+              // Sensing row
+              rows += `
+                <tr>
+                  <td style="font-family:monospace;color:var(--fs-text-muted);">${(d.createdAt || '08:11:02').substring(11, 19)}</td>
+                  <td><span class="fs-agent-badge fs-agent-optm">DisruptionAgent</span></td>
+                  <td>Sensing / Bayesian</td>
+                  <td>Supplier ${d.impactedSupplier_ID || 'SUP-001'} outage confirmed for ${d.impactedMaterial_ID || 'MAT-100'}. Net shortage: 5,000 PC.</td>
+                  <td><span class="fs-badge fs-badge-critical" style="padding:1px 4px;font-size:9.5px;">${(Number(d.confidenceScore || 0.95) * 100).toFixed(1)}%</span></td>
+                </tr>`;
+
+              // AgentAction rows
+              if (currentPlan.actions && currentPlan.actions.length > 0) {
+                currentPlan.actions.forEach(act => {
+                  const target = act.targetSupplier_ID || act.targetPlant_ID || 'Internal';
+                  const isPO = act.actionType === 'CREATE_PO';
+                  rows += `
+                    <tr>
+                      <td style="font-family:monospace;color:var(--fs-text-muted);">${(act.createdAt || '08:11:05').substring(11, 19)}</td>
+                      <td><span class="fs-agent-badge ${isPO ? 'fs-agent-proc' : 'fs-agent-inv'}">${act.agentName || 'Agent'}</span></td>
+                      <td>${isPO ? 'Query API_SUPPLIER' : 'Query API_STOCK'}</td>
+                      <td>${isPO ? 'Procured ' : 'Allocated '}${Number(act.quantity).toLocaleString()} PC from ${target} ($${Number(act.estimatedCost).toLocaleString()}).</td>
+                      <td><span class="fs-badge fs-badge-healthy" style="padding:1px 4px;font-size:9.5px;">95.0%</span></td>
+                    </tr>`;
+                });
+              }
+
+              // CP-SAT Solver row
+              rows += `
+                <tr>
+                  <td style="font-family:monospace;color:var(--fs-text-muted);">08:11:08</td>
+                  <td><span class="fs-agent-badge fs-agent-optm">CpSatOptimizer</span></td>
+                  <td>Constraint Solver</td>
+                  <td>CP-SAT mixed-integer program solved in 42ms. Formulated optimal mix ($${Number(currentPlan.totalCost || 157000).toLocaleString()}).</td>
+                  <td><span class="fs-badge fs-badge-healthy" style="padding:1px 4px;font-size:9.5px;">100%</span></td>
+                </tr>`;
+
+              // Policy Gate row
+              rows += `
+                <tr>
+                  <td style="font-family:monospace;color:var(--fs-text-muted);">08:11:09</td>
+                  <td><span class="fs-agent-badge fs-agent-pol">PolicyControl</span></td>
+                  <td>Commitment Gate</td>
+                  <td>${currentPlan.status === 'PENDING_APPROVAL' ? 'Policy-as-Code checks passed. Value > $100K threshold; required executive approval flag raised.' : 'Commitment gate cleared. Status: ' + currentPlan.status}</td>
+                  <td><span class="fs-badge ${currentPlan.status === 'PENDING_APPROVAL' ? 'fs-badge-warning' : 'fs-badge-healthy'}" style="padding:1px 4px;font-size:9.5px;">100%</span></td>
+                </tr>`;
+
+              telemTbody.innerHTML = rows;
+            }
+          }
+        }
+
+        // 4. Render Live Audit Events Table
+        const auditTbody = document.getElementById('audit-tbody');
+        if (auditTbody && auditEvents.length > 0) {
+          let auditRows = '';
+          auditEvents.forEach(ev => {
+            const timeStr = (ev.createdAt || '').replace('T', ' ').substring(0, 19);
+            const isGood = ev.eventType === 'PLAN_APPROVED' || ev.eventType === 'EXECUTION_SUCCESS';
+            const isBad = ev.eventType === 'DISRUPTION_TRIGGERED' || ev.eventType === 'EXECUTION_FAILED' || ev.eventType === 'PLAN_REJECTED';
+            const isWarn = ev.eventType === 'SAGA_COMPENSATION' || ev.eventType === 'REPLAN_INITIATED';
+            const badgeClass = isGood ? 'fs-badge-healthy' : isBad ? 'fs-badge-critical' : isWarn ? 'fs-badge-warning' : 'fs-badge-neutral';
+            const shortId = (ev.ID || '').substring(0, 8);
+
+            auditRows += `
+              <tr>
+                <td style="font-family:monospace;font-size:11.5px;">${timeStr}</td>
+                <td>${ev.entityName || 'System'}</td>
+                <td><span class="fs-badge ${badgeClass}">${ev.eventType}</span></td>
+                <td>${ev.details || ''}</td>
+                <td>${ev.entityName}:${(ev.entityId || '').substring(0, 12)}</td>
+                <td style="font-family:monospace;font-size:10.5px;color:var(--fs-text-muted);">0x${shortId}</td>
+              </tr>`;
+          });
+          auditTbody.innerHTML = auditRows;
+        }
+
+      } catch (err) {
+        console.warn('[FORESIGHT UI] Error loading live data:', err);
+        const badge = document.getElementById('live-connection-badge');
+        if (badge) {
+          badge.textContent = 'RETRYING BACKEND...';
+          badge.parentElement.className = 'fs-badge fs-badge-neutral';
+        }
+      }
     }
 
-    function rejectPlan() {
+    function updateSagaUI(status) {
+      const sagaBadge = document.getElementById('saga-state-badge');
+      const stepApprove = document.getElementById('saga-step-approval');
+      const stepCommit = document.getElementById('saga-step-commit');
+      const stepMonitor = document.getElementById('saga-step-monitor');
+
+      if (status === 'EXECUTED') {
+        if (sagaBadge) sagaBadge.textContent = 'Stage 6 / 6';
+        if (stepApprove) {
+          stepApprove.className = 'fs-saga-step completed';
+          const icon = stepApprove.querySelector('.fs-saga-step-icon');
+          if (icon) icon.innerHTML = '&#10003;';
+        }
+        if (stepCommit) {
+          stepCommit.className = 'fs-saga-step completed';
+          const icon = stepCommit.querySelector('.fs-saga-step-icon');
+          if (icon) icon.innerHTML = '&#10003;';
+        }
+        if (stepMonitor) stepMonitor.className = 'fs-saga-step active';
+      } else if (status === 'REPLANNED' || status === 'REJECTED') {
+        if (sagaBadge) sagaBadge.textContent = 'SAGA Compensated / Replanned';
+        if (stepApprove) {
+          stepApprove.className = 'fs-saga-step';
+          const icon = stepApprove.querySelector('.fs-saga-step-icon');
+          if (icon) icon.innerHTML = '&#10007;';
+        }
+      } else if (status === 'PENDING_APPROVAL') {
+        if (sagaBadge) sagaBadge.textContent = 'Stage 4 / 6';
+        if (stepApprove) stepApprove.className = 'fs-saga-step active';
+      }
+    }
+
+    // Approval Action via CAP
+    async function approvePlan() {
+      if (!activePlanId) {
+        alert('No active recovery plan found. Please trigger a disruption first.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-approve');
+      btn.disabled = true;
+      btn.innerHTML = '<span style="display:inline-block;animation:spin 1s linear infinite;">&#8987;</span> Committing to S/4HANA via CAP...';
+
+      try {
+        const res = await fetch(CAP_BASE_URL + '/approvePlan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            planId: activePlanId,
+            approverId: 'SC_Ops_Executive',
+            comments: 'Executive approved Plan. Dispatched PO to Mock S/4HANA.'
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error('Approval request failed: ' + res.statusText);
+        }
+
+        await loadLiveConsoleData();
+        alert('SUCCESS: Recovery Plan Approved by Executive.\n\n• S/4HANA Purchase Order Created (3,300 PC from SUP-002)\n• Stock Transport Order Created (1,200 PC from Plant B)\n• Internal Reservation Committed (500 PC at Plant A)\n• Saga Execution State: Stage 6 (Active Telemetry Monitoring)\n• Immutable Audit Record Written to SAP HANA Cloud');
+
+      } catch (err) {
+        alert('Error approving plan: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = 'Approve Recovery Plan';
+        await loadLiveConsoleData();
+      }
+    }
+
+    // Reject / Replan Action via CAP
+    async function rejectPlan() {
+      if (!activePlanId) {
+        alert('No active recovery plan found.');
+        return;
+      }
+
       if (confirm('Initiate SAGA Compensation & Re-plan?\n\nThis will cancel the pending proposal, release temporary inventory reservations at Plant B, and trigger the Orchestrator for secondary alternatives.')) {
-        document.getElementById('kpi-gate-status').textContent = 'REPLANNING';
-        document.getElementById('kpi-gate-status').style.color = '#dc2626';
-        alert('SAGA Compensation executed. Temporary holds released. Re-planning initiated.');
+        try {
+          const res = await fetch(CAP_BASE_URL + '/rejectPlan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              planId: activePlanId,
+              approverId: 'SC_Ops_Executive',
+              comments: 'Plan rejected by operations executive. Holds released.'
+            })
+          });
+
+          if (!res.ok) {
+            throw new Error('Rejection request failed: ' + res.statusText);
+          }
+
+          await loadLiveConsoleData();
+          alert('SAGA Compensation executed. Temporary holds released. Re-planning initiated.');
+        } catch (err) {
+          alert('Error rejecting plan: ' + err.message);
+          await loadLiveConsoleData();
+        }
+      }
+    }
+
+    // Trigger Disruption via CAP
+    async function triggerDisruptionDemo() {
+      const btn = document.getElementById('btn-trigger-disruption');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span style="display:inline-block;animation:spin 1s linear infinite;">&#8987;</span> Triggering Swarm...';
+      }
+
+      try {
+        const res = await fetch(CAP_BASE_URL + '/triggerDisruption', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            supplierId: 'SUP-001',
+            materialId: 'MAT-100'
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error('Trigger disruption failed: ' + res.statusText);
+        }
+
+        await loadLiveConsoleData();
+      } catch (err) {
+        alert('Disruption trigger error: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '⚡ Trigger Disruption';
+        }
       }
     }
 
     function runSimulation() {
       alert('Monte Carlo Simulator executed (500 runs).\n\n• Mean Lead Time: 5.95 days\n• P95 Lead Time: 6.74 days\n• Expected Variance: ±0.42 days\n• Probability of SLA Breach: 2.1% (Within policy tolerance)');
     }
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLiveConsoleData();
+      // Polling every 5 seconds for live changes
+      setInterval(loadLiveConsoleData, 5000);
+    });
   </script>
 </body>
 </html>
+

@@ -10,6 +10,7 @@
         <pages>
             <Page id="page" title="FORESIGHT — Decision &amp; Commitment Control Plane" class="sapUiResponsiveContentPadding">
                 <headerContent>
+                    <Button text="Trigger Disruption" type="Emphasized" icon="sap-icon://alert" press=".onTriggerDisruption" class="sapUiTinyMarginEnd"/>
                     <core:HTML content='&lt;div class="fs-badge fs-badge-healthy"&gt;&lt;span class="fs-badge-dot"&gt;&lt;/span&gt;&lt;span&gt;LIVE OPERATIONAL&lt;/span&gt;&lt;/div&gt;' />
                     <core:HTML content='&lt;div class="fs-badge fs-badge-neutral"&gt;&lt;span&gt;Adapter: S/4HANA (LOCAL_MOCK)&lt;/span&gt;&lt;/div&gt;' />
                 </headerContent>
@@ -18,27 +19,27 @@
                     <layout:Grid defaultSpan="XL2 L2 M4 S6" class="sapUiTinyMarginBottom">
                         <VBox class="fs-panel sapUiTinyMargin">
                             <Text text="ACTIVE DISRUPTION" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="SUP-003 (Critical)" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
+                            <Title text="{= ${/kpi/disruption} || 'SUP-001 (Critical)'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
                         </VBox>
                         <VBox class="fs-panel sapUiTinyMargin">
                             <Text text="AFFECTED MATERIAL" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="MAT-100 (5,000 PC)" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
+                            <Title text="{= ${/kpi/material} || 'MAT-100 (5,000 PC)'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
                         </VBox>
                         <VBox class="fs-panel sapUiTinyMargin">
                             <Text text="RECOMMENDED COST" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="$157,000" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
+                            <Title text="{= ${/kpi/cost} || '$157,000'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
                         </VBox>
                         <VBox class="fs-panel sapUiTinyMargin">
                             <Text text="SERVICE IMPACT" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="0 Days Delay (SLA Met)" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
+                            <Title text="{= ${/kpi/service} || '0 Days Delay (SLA Met)'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
                         </VBox>
                         <VBox class="fs-panel sapUiTinyMargin">
                             <Text text="COMMITMENT RISK" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="$23,550 (15%)" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
+                            <Title text="{= ${/kpi/risk} || '$23,550 (15%)'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
                         </VBox>
                         <VBox class="fs-panel sapUiTinyMargin">
                             <Text text="GOVERNANCE GATE" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="Pending Approval" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
+                            <Title text="{= ${/kpi/gate} || 'Pending Approval'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
                         </VBox>
                     </layout:Grid>
 
@@ -53,7 +54,7 @@
                                         <HBox justifyContent="SpaceBetween" alignItems="Center" class="fs-panel-header">
                                             <Title text="Supply Chain Knowledge Topology &amp; Disruption Blast Radius" level="H5" class="fs-panel-title"/>
                                         </HBox>
-                                        <core:HTML content='&lt;div class="fs-topology-container"&gt;&lt;svg class="fs-topology-svg" viewBox="0 0 920 420"&gt;&lt;path d="M 180 80 L 340 180" class="fs-edge disrupted"/&gt;&lt;path d="M 180 200 L 340 200" class="fs-edge active"/&gt;&lt;path d="M 180 320 L 340 220" class="fs-edge"/&gt;&lt;path d="M 490 190 L 610 130" class="fs-edge active"/&gt;&lt;path d="M 490 210 L 610 270" class="fs-edge active"/&gt;&lt;rect x="30" y="45" width="150" height="65" class="fs-node-rect disrupted"/&gt;&lt;text x="42" y="70" class="fs-node-title"&gt;SUP-003 (Outage)&lt;/text&gt;&lt;rect x="30" y="165" width="150" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="42" y="190" class="fs-node-title"&gt;SUP-002 (Recommended)&lt;/text&gt;&lt;rect x="340" y="165" width="150" height="70" class="fs-node-rect selected"/&gt;&lt;text x="352" y="190" class="fs-node-title"&gt;MAT-100 (Shortage)&lt;/text&gt;&lt;rect x="610" y="100" width="140" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="622" y="125" class="fs-node-title"&gt;PLANT-A (Austin)&lt;/text&gt;&lt;rect x="610" y="235" width="140" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="622" y="260" class="fs-node-title"&gt;PLANT-B (Depot)&lt;/text&gt;&lt;/svg&gt;&lt;/div&gt;' />
+                                        <core:HTML content='&lt;div class="fs-topology-container"&gt;&lt;svg class="fs-topology-svg" viewBox="0 0 920 420"&gt;&lt;path d="M 180 80 L 340 180" class="fs-edge disrupted"/&gt;&lt;path d="M 180 200 L 340 200" class="fs-edge active"/&gt;&lt;path d="M 180 320 L 340 220" class="fs-edge"/&gt;&lt;path d="M 490 190 L 610 130" class="fs-edge active"/&gt;&lt;path d="M 490 210 L 610 270" class="fs-edge active"/&gt;&lt;rect x="30" y="45" width="150" height="65" class="fs-node-rect disrupted"/&gt;&lt;text x="42" y="70" class="fs-node-title"&gt;SUP-001 (Outage)&lt;/text&gt;&lt;rect x="30" y="165" width="150" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="42" y="190" class="fs-node-title"&gt;SUP-002 (Recommended)&lt;/text&gt;&lt;rect x="340" y="165" width="150" height="70" class="fs-node-rect selected"/&gt;&lt;text x="352" y="190" class="fs-node-title"&gt;MAT-100 (Shortage)&lt;/text&gt;&lt;rect x="610" y="100" width="140" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="622" y="125" class="fs-node-title"&gt;PLANT-A (Austin)&lt;/text&gt;&lt;rect x="610" y="235" width="140" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="622" y="260" class="fs-node-title"&gt;PLANT-B (Depot)&lt;/text&gt;&lt;/svg&gt;&lt;/div&gt;' />
                                     </VBox>
 
                                     <!-- Right: Decision & Commitment Console -->
@@ -65,19 +66,19 @@
                                         <VBox class="fs-panel-body">
                                             <Text text="Plan A (Balanced Recovery - Recommended)" class="sapUiTinyMarginBottom" style="font-weight:600;"/>
                                             <List>
-                                                <DisplayListItem label="Total Execution Cost" value="$157,000" />
-                                                <DisplayListItem label="SLA Delivery Delay" value="0 Days (SLA Met)" />
-                                                <DisplayListItem label="Commitment Risk Index" value="$23,550 (15%)" />
-                                                <DisplayListItem label="P95 Lead Time" value="6.7 Days" />
-                                                <DisplayListItem label="Policy Validation" value="3/3 Passed (Human Gate Active)" />
+                                                <DisplayListItem label="Total Execution Cost" value="{= ${/plan/cost} || '$157,000'}" />
+                                                <DisplayListItem label="SLA Delivery Delay" value="{= ${/plan/service} || '0 Days (SLA Met)'}" />
+                                                <DisplayListItem label="Commitment Risk Index" value="{= ${/plan/risk} || '$23,550 (15%)'}" />
+                                                <DisplayListItem label="P95 Lead Time" value="{= ${/plan/leadTime} || '6.7 Days'}" />
+                                                <DisplayListItem label="Policy Validation" value="{= ${/plan/policy} || '3/3 Passed (Human Gate Active)'}" />
                                             </List>
 
                                             <!-- S/4 Preview -->
                                             <VBox class="fs-erp-preview sapUiSmallMarginTop">
                                                 <Text text="STAGED SAP S/4HANA ACTIONS" style="font-weight:700;"/>
-                                                <Text text="• PO-SIM-9482: 3,300 PC from SUP-002 ($148,500)"/>
-                                                <Text text="• STO-SIM-1204: 1,200 PC from Plant B ($6,000)"/>
-                                                <Text text="• Buffer Stock: 500 PC at Plant A ($2,500)"/>
+                                                <List items="{/stagedActions}" showSeparators="None">
+                                                    <StandardListItem title="{text}" />
+                                                </List>
                                             </VBox>
 
                                             <!-- Action Buttons -->

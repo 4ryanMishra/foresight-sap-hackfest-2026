@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
-foresight.db
+foresight.db*
 build/
 Release/
 *.log

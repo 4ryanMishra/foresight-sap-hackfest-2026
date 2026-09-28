@@ -94,6 +94,15 @@ module.exports = cds.service.impl(async function() {
                 await INSERT.into('foresight.AgentAction', actionsToInsert);
             }
 
+            // Create Initial Commitment Record
+            await INSERT.into('foresight.Commitment', {
+                ID: cds_utils.uuid(),
+                recoveryPlan_ID: customPlanId,
+                commitmentType: 'CustomerOrder',
+                referenceId: 'CUST-882 (Automotive Tier 1)',
+                status: 'AT_RISK'
+            });
+
             // Update Disruption
             await UPDATE('foresight.Disruption').set({ status: 'PLAN_PROPOSED', recoveryPlan_ID: customPlanId }).where({ ID: disruptionId });
 
@@ -107,24 +116,29 @@ module.exports = cds.service.impl(async function() {
 
     this.on('approvePlan', async (req) => {
         const { planId, approverId, comments } = req.data;
+        const cds_utils = cds.utils;
+        const reviewer = approverId || 'SC_Ops_Executive';
+        const notes = comments || 'Executive approved recovery plan.';
 
         // Update Recovery Plan Status
         await UPDATE('foresight.RecoveryPlan').set({ status: 'APPROVED' }).where({ ID: planId });
 
         // Add Approval record
         await INSERT.into('foresight.Approval', {
+            ID: cds_utils.uuid(),
             recoveryPlan_ID: planId,
-            approverId: approverId,
+            approverId: reviewer,
             decision: 'APPROVED',
-            comments: comments
+            comments: notes
         });
 
         // Log Audit Event
         await INSERT.into('foresight.AuditEvent', {
+            ID: cds_utils.uuid(),
             entityName: 'RecoveryPlan',
             entityId: planId,
             eventType: 'PLAN_APPROVED',
-            details: `Plan approved by ${approverId}: ${comments}`
+            details: `Plan approved by ${reviewer}: ${notes}`
         });
 
         // Execute actions against S/4 Mock
@@ -141,10 +155,12 @@ module.exports = cds.service.impl(async function() {
                 }
             }
             
-            // Mark as executed
+            // Mark as executed & mitigate commitments
             await UPDATE('foresight.RecoveryPlan').set({ status: 'EXECUTED' }).where({ ID: planId });
+            await UPDATE('foresight.Commitment').set({ status: 'MITIGATED' }).where({ recoveryPlan_ID: planId });
             
             await INSERT.into('foresight.AuditEvent', {
+                ID: cds_utils.uuid(),
                 entityName: 'RecoveryPlan',
                 entityId: planId,
                 eventType: 'EXECUTION_SUCCESS',
@@ -156,12 +172,103 @@ module.exports = cds.service.impl(async function() {
             await UPDATE('foresight.RecoveryPlan').set({ status: 'EXECUTION_FAILED' }).where({ ID: planId });
             
             await INSERT.into('foresight.AuditEvent', {
+                ID: cds_utils.uuid(),
                 entityName: 'RecoveryPlan',
                 entityId: planId,
                 eventType: 'EXECUTION_FAILED',
                 details: `Plan ${planId} execution failed: ${error.message}`
             });
         }
+
+        return await SELECT.one.from('foresight.RecoveryPlan').where({ ID: planId });
+    });
+
+    this.on('rejectPlan', async (req) => {
+        const { planId, approverId, comments } = req.data;
+        const cds_utils = cds.utils;
+        const reviewer = approverId || 'SC_Ops_Executive';
+        const notes = comments || 'Plan rejected by operations executive. Holds released.';
+
+        // 1. Update Recovery Plan Status to REJECTED
+        await UPDATE('foresight.RecoveryPlan').set({ status: 'REJECTED' }).where({ ID: planId });
+
+        // 2. Add Approval record
+        await INSERT.into('foresight.Approval', {
+            ID: cds_utils.uuid(),
+            recoveryPlan_ID: planId,
+            approverId: reviewer,
+            decision: 'REJECTED',
+            comments: notes
+        });
+
+        // 3. Log Audit Event
+        await INSERT.into('foresight.AuditEvent', {
+            ID: cds_utils.uuid(),
+            entityName: 'RecoveryPlan',
+            entityId: planId,
+            eventType: 'PLAN_REJECTED',
+            details: `Plan ${planId} rejected by ${reviewer}: ${notes}`
+        });
+
+        // 4. SAGA Compensation
+        await UPDATE('foresight.RecoveryPlan').set({ status: 'COMPENSATING' }).where({ ID: planId });
+        await INSERT.into('foresight.AuditEvent', {
+            ID: cds_utils.uuid(),
+            entityName: 'SagaCoordinator',
+            entityId: planId,
+            eventType: 'SAGA_COMPENSATION',
+            details: 'Released temporary inventory reservations (1,200 PC at Plant B) and cancelled pending purchase order drafts.'
+        });
+
+        // 5. Replan Initiated
+        await UPDATE('foresight.RecoveryPlan').set({ status: 'REPLANNED' }).where({ ID: planId });
+        await UPDATE('foresight.Commitment').set({ status: 'FAILED' }).where({ recoveryPlan_ID: planId });
+        
+        await INSERT.into('foresight.AuditEvent', {
+            ID: cds_utils.uuid(),
+            entityName: 'RecoveryPlan',
+            entityId: planId,
+            eventType: 'REPLAN_INITIATED',
+            details: 'Recovery replanning initiated. Agent Swarm notified to formulate secondary recovery alternatives.'
+        });
+
+        return await SELECT.one.from('foresight.RecoveryPlan').where({ ID: planId });
+    });
+
+    this.on('failExecution', async (req) => {
+        const { planId, reason } = req.data;
+        const cds_utils = cds.utils;
+        const failReason = reason || 'Mock S/4HANA communication timeout or credit limit check failed.';
+
+        await UPDATE('foresight.RecoveryPlan').set({ status: 'EXECUTION_FAILED' }).where({ ID: planId });
+        await INSERT.into('foresight.AuditEvent', {
+            ID: cds_utils.uuid(),
+            entityName: 'RecoveryPlan',
+            entityId: planId,
+            eventType: 'EXECUTION_FAILED',
+            details: `S/4HANA commit execution failed: ${failReason}`
+        });
+
+        // Trigger SAGA Compensation
+        await UPDATE('foresight.RecoveryPlan').set({ status: 'COMPENSATING' }).where({ ID: planId });
+        await INSERT.into('foresight.AuditEvent', {
+            ID: cds_utils.uuid(),
+            entityName: 'SagaCoordinator',
+            entityId: planId,
+            eventType: 'SAGA_COMPENSATION',
+            details: 'Automated failure compensation: rolled back staged reservations.'
+        });
+
+        await UPDATE('foresight.RecoveryPlan').set({ status: 'REPLANNED' }).where({ ID: planId });
+        await UPDATE('foresight.Commitment').set({ status: 'FAILED' }).where({ recoveryPlan_ID: planId });
+
+        await INSERT.into('foresight.AuditEvent', {
+            ID: cds_utils.uuid(),
+            entityName: 'RecoveryPlan',
+            entityId: planId,
+            eventType: 'REPLAN_INITIATED',
+            details: 'Automated replan initiated following execution failure.'
+        });
 
         return await SELECT.one.from('foresight.RecoveryPlan').where({ ID: planId });
     });

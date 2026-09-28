@@ -22,4 +22,10 @@ service ForesightService {
     // Action to approve plan
     action approvePlan(planId: String, approverId: String, comments: String) returns RecoveryPlans;
 
+    // Action to reject plan and initiate SAGA compensation / replan
+    action rejectPlan(planId: String, approverId: String, comments: String) returns RecoveryPlans;
+
+    // Action to simulate execution failure and automated SAGA compensation
+    action failExecution(planId: String, reason: String) returns RecoveryPlans;
+
 }
