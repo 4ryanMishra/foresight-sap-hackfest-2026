@@ -1,0 +1,4 @@
+ID;name;location;riskScore;isQualified;capacity
+SUP-001;Acme Corp;Taiwan;20.5;true;10000
+SUP-002;Global Parts;Germany;10.0;true;5000
+SUP-003;Risky Supplier;Vietnam;85.0;false;20000
