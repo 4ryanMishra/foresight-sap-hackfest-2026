@@ -1,0 +1,90 @@
+<mvc:View
+    controllerName="foresight.ui.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:layout="sap.ui.layout">
+    <App id="app">
+        <pages>
+            <Page id="page" title="FORESIGHT Decision Console">
+                <content>
+                    <ObjectHeader
+                        id="disruptionHeader"
+                        intro="Disruption Event: DISRUPT-101"
+                        title="Supplier Failure Detected"
+                        icon="sap-icon://alert"
+                        number="95%"
+                        numberUnit="Confidence"
+                        numberState="Error">
+                        <attributes>
+                            <ObjectAttribute title="Affected Supplier" text="SUP-003 (Risky Supplier)" />
+                            <ObjectAttribute title="Affected Material" text="MAT-100 (Microcontroller X)" />
+                            <ObjectAttribute title="Required Quantity" text="5,000 PC" />
+                        </attributes>
+                        <statuses>
+                            <ObjectStatus title="Status" text="Analyzing" state="Warning" />
+                        </statuses>
+                    </ObjectHeader>
+
+                    <Panel headerText="AI Recovery Plan Proposal" class="sapUiResponsiveMargin" width="auto">
+                        <layout:Grid defaultSpan="L6 M6 S12">
+                            <VBox>
+                                <Title text="Optimization Metrics" level="H4"/>
+                                <List>
+                                    <StandardListItem title="Total Cost" description="$225,000" infoState="Error"/>
+                                    <StandardListItem title="Service Impact" description="No delay for Tier 1 Customers" infoState="Success"/>
+                                    <StandardListItem title="Commitment Risk" description="$11,250 (5% Failure Prob)" infoState="Warning"/>
+                                </List>
+                            </VBox>
+                            <VBox>
+                                <Title text="Policy Validation" level="H4"/>
+                                <List>
+                                    <StandardListItem title="Budget Check" description="Passed (Under $1M)" icon="sap-icon://accept" infoState="Success"/>
+                                    <StandardListItem title="Risk Check" description="Passed (Risk under $50K)" icon="sap-icon://accept" infoState="Success"/>
+                                    <StandardListItem title="Human Approval" description="Required (High Value > $100K)" icon="sap-icon://warning2" infoState="Warning"/>
+                                </List>
+                            </VBox>
+                        </layout:Grid>
+                    </Panel>
+
+                    <Panel headerText="Proposed Actions (Saga Commit)" class="sapUiResponsiveMargin" width="auto">
+                        <Table id="actionTable">
+                            <columns>
+                                <Column><Text text="Agent" /></Column>
+                                <Column><Text text="Action Type" /></Column>
+                                <Column><Text text="Target" /></Column>
+                                <Column><Text text="Quantity" /></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="InventoryAgent" />
+                                        <Text text="STOCK_TRANSFER" />
+                                        <Text text="PLANT-B" />
+                                        <Text text="1,200" />
+                                    </cells>
+                                </ColumnListItem>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="ProcurementAgent" />
+                                        <Text text="CREATE_PO" />
+                                        <Text text="SUP-002" />
+                                        <Text text="3,800" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </Panel>
+                </content>
+                <footer>
+                    <Toolbar>
+                        <ToolbarSpacer/>
+                        <Button text="Reject Plan" type="Reject" press=".onReject" />
+                        <Button text="Approve &amp; Commit" type="Accept" press=".onApprove" />
+                    </Toolbar>
+                </footer>
+            </Page>
+        </pages>
+    </App>
+</mvc:View>

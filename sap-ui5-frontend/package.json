@@ -1,0 +1,11 @@
+{
+  "name": "foresight-ui",
+  "version": "1.0.0",
+  "description": "FORESIGHT UI5 Frontend",
+  "scripts": {
+    "start": "ui5 serve -o index.html"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^3.0.0"
+  }
+}
