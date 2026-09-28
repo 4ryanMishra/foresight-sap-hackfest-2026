@@ -27,12 +27,15 @@ class CpSatOptimizer:
         
         # Variables: how much quantity to take from each recommendation
         req_vars = {}
+        material_source_vars = []
         for idx, rec in enumerate(recommendations):
             # var: quantity assigned to this recommendation
             req_vars[idx] = model.NewIntVar(0, int(rec.proposed_quantity), f"rec_{idx}")
+            if rec.action_type in ["CREATE_PO", "STOCK_TRANSFER"]:
+                material_source_vars.append(req_vars[idx])
             
-        # Constraint 1: Meet required quantity
-        model.Add(sum(req_vars.values()) == int(context.required_quantity))
+        # Constraint 1: Meet required quantity using only material sources
+        model.Add(sum(material_source_vars) == int(context.required_quantity))
         
         # Objective: Minimize total cost
         # cost = sum(qty * cost_per_unit)

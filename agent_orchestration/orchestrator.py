@@ -37,6 +37,7 @@ class OrchestratorAgent:
         
         # Overwrite context with actual impact
         context.impacted_material_id = impact['impacted_material_id']
+        context.impacted_supplier_id = impact['impacted_supplier_id']
         context.required_quantity = impact['required_quantity']
 
         # 2. COLLABORATE
