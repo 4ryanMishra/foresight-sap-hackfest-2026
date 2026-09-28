@@ -1,8 +1,8 @@
 const cds = require('@sap/cds');
 const axios = require('axios');
 
-const S4_MOCK_URL = 'http://localhost:8080/sap/opu/odata/sap';
-const ORCHESTRATOR_URL = 'http://localhost:8000/orchestrate';
+const S4_MOCK_URL = process.env.S4_MOCK_URL || 'http://localhost:8080/sap/opu/odata/sap';
+const ORCHESTRATOR_URL = process.env.ORCHESTRATOR_URL || 'http://localhost:8000/orchestrate';
 
 module.exports = cds.service.impl(async function() {
     this.on('triggerDisruption', async (req) => {
