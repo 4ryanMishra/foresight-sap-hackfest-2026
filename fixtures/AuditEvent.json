@@ -1,0 +1,7 @@
+{
+  "ID": "e1d2c3b4-a5b6-c7d8-e9f0-1a2b3c4d5e6f",
+  "entityName": "RecoveryPlan",
+  "entityId": "89c7c14c-5793-4c3f-bdef-5f8eb52edca5",
+  "eventType": "EXECUTION_SUCCESS",
+  "details": "Plan 89c7c14c-5793-4c3f-bdef-5f8eb52edca5 successfully executed against S/4HANA."
+}

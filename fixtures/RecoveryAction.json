@@ -1,0 +1,11 @@
+{
+  "ID": "c2b5e9f1-a12b-4e8c-8f2a-d9b8a3e7f1a2",
+  "recoveryPlan_ID": "89c7c14c-5793-4c3f-bdef-5f8eb52edca5",
+  "agentName": "ProcurementAgent",
+  "actionType": "CREATE_PO",
+  "targetSupplier_ID": "SUP-002",
+  "targetPlant_ID": null,
+  "quantity": 3300,
+  "estimatedCost": 99000.0,
+  "description": "Action from ProcurementAgent"
+}

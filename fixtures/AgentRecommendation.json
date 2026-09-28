@@ -1,0 +1,10 @@
+{
+  "agent_name": "ProcurementAgent",
+  "action_type": "CREATE_PO",
+  "target_id": "SUP-002",
+  "proposed_quantity": 5000,
+  "estimated_cost": 150000.0,
+  "confidence": 0.9,
+  "rationale": "Alternative supplier with sufficient capacity and low risk.",
+  "lead_time_days": 5
+}

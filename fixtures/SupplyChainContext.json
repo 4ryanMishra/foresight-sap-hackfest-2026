@@ -1,0 +1,29 @@
+{
+  "disruption_id": "bf99cfaa-46a9-4be6-a79b-f06f8c30bcb8",
+  "impacted_material_id": "MAT-100",
+  "impacted_supplier_id": "SUP-001",
+  "required_quantity": 5000,
+  "deadline": "2026-10-15",
+  "available_suppliers": [
+    {
+      "Supplier": "SUP-002",
+      "SupplierName": "Global Parts",
+      "Country": "DE",
+      "RiskClass": "Low",
+      "Capacity": 5000
+    }
+  ],
+  "available_inventory": [
+    {
+      "Material": "MAT-100",
+      "Plant": "PLANT-A",
+      "UnrestrictedStock": 500
+    },
+    {
+      "Material": "MAT-100",
+      "Plant": "PLANT-B",
+      "UnrestrictedStock": 1200
+    }
+  ],
+  "open_orders": []
+}

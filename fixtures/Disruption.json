@@ -1,0 +1,10 @@
+{
+  "ID": "bf99cfaa-46a9-4be6-a79b-f06f8c30bcb8",
+  "type": "SupplierFailure",
+  "description": "Critical supplier went offline due to cyberattack",
+  "status": "PLAN_PROPOSED",
+  "confidenceScore": 0.95,
+  "impactedSupplier_ID": "SUP-001",
+  "impactedMaterial_ID": "MAT-100",
+  "recoveryPlan_ID": "89c7c14c-5793-4c3f-bdef-5f8eb52edca5"
+}
