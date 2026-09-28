@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from models import SupplyChainContext, AgentRecommendation
+from agent_orchestration.models import SupplyChainContext, AgentRecommendation
 
 class LLMProvider:
     async def generate_structured_response(self, prompt: str, schema: Any) -> Any:

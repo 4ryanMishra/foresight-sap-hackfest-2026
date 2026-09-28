@@ -1,8 +1,8 @@
 import asyncio
 from typing import List
-from models import SupplyChainContext, AgentRecommendation
-from agents import DisruptionAgent, ProcurementAgent, InventoryAgent, LogisticsAgent, ProductionAgent, RiskAgent
-from interfaces import LLMProvider, OptimizationService, PolicyService
+from agent_orchestration.models import SupplyChainContext, AgentRecommendation
+from agent_orchestration.agents import DisruptionAgent, ProcurementAgent, InventoryAgent, LogisticsAgent, ProductionAgent, RiskAgent
+from agent_orchestration.interfaces import LLMProvider, OptimizationService, PolicyService
 
 class OrchestratorAgent:
     def __init__(self, llm_provider: LLMProvider, opt_service: OptimizationService, policy_service: PolicyService):

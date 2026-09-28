@@ -1,7 +1,7 @@
 import asyncio
 from typing import List
-from models import SupplyChainContext, AgentRecommendation
-from interfaces import LLMProvider
+from agent_orchestration.models import SupplyChainContext, AgentRecommendation
+from agent_orchestration.interfaces import LLMProvider
 
 class BaseAgent:
     def __init__(self, llm_provider: LLMProvider):

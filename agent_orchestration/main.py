@@ -5,9 +5,9 @@ import os
 # Add parent directory to path so we can import optimization
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from models import SupplyChainContext
-from orchestrator import OrchestratorAgent
-from interfaces import LLMProvider
+from agent_orchestration.models import SupplyChainContext
+from agent_orchestration.orchestrator import OrchestratorAgent
+from agent_orchestration.interfaces import LLMProvider
 from optimization.optimizer import CpSatOptimizer
 from optimization.policy import PolicyService
 
