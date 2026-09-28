@@ -1,0 +1,764 @@
+/* ==========================================================================
+   FORESIGHT ENTERPRISE CONTROL PLANE - DESIGN SYSTEM
+   Theme: Light Mode Enterprise Operational Console
+   Compatible with SAP Fiori Horizon conventions
+   ========================================================================== */
+
+:root {
+  /* Surfaces & Canvas */
+  --fs-canvas: #f8fafc;
+  --fs-surface: #ffffff;
+  --fs-surface-alt: #f1f5f9;
+  --fs-surface-hover: #e2e8f0;
+  --fs-border: #e2e8f0;
+  --fs-border-subtle: #cbd5e1;
+  --fs-border-focus: #0284c7;
+
+  /* Typography Colors */
+  --fs-text-primary: #0f172a;
+  --fs-text-secondary: #334155;
+  --fs-text-muted: #64748b;
+  --fs-text-inverse: #ffffff;
+
+  /* Semantic Status Colors */
+  --fs-critical: #dc2626;
+  --fs-critical-bg: #fef2f2;
+  --fs-critical-border: #fecaca;
+  --fs-critical-text: #991b1b;
+
+  --fs-warning: #d97706;
+  --fs-warning-bg: #fffbeb;
+  --fs-warning-border: #fde68a;
+  --fs-warning-text: #92400e;
+
+  --fs-healthy: #0f766e;
+  --fs-healthy-bg: #f0fdf4;
+  --fs-healthy-border: #bbf7d0;
+  --fs-healthy-text: #166534;
+
+  --fs-accent-blue: #1d4ed8;
+  --fs-accent-blue-bg: #eff6ff;
+  --fs-accent-blue-border: #bfdbfe;
+  --fs-accent-blue-text: #1e40af;
+
+  /* Elevation */
+  --fs-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --fs-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --fs-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+
+  /* Radius */
+  --fs-radius-sm: 4px;
+  --fs-radius: 6px;
+  --fs-radius-md: 8px;
+}
+
+/* Reset & Global */
+html, body, #content, .sapUiBody {
+  background-color: var(--fs-canvas) !important;
+  color: var(--fs-text-primary);
+  font-family: "72", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Override standard SAPUI5 noisy elements */
+.sapMPage, .sapMPageBgSolid {
+  background-color: var(--fs-canvas) !important;
+}
+
+.sapMPageHeader {
+  background-color: var(--fs-surface) !important;
+  border-bottom: 1px solid var(--fs-border) !important;
+}
+
+/* Custom Shell Header */
+.fs-shell-header {
+  background: var(--fs-surface);
+  border-bottom: 1px solid var(--fs-border);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fs-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fs-logo-mark {
+  background: var(--fs-accent-blue);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: var(--fs-radius-sm);
+}
+
+.fs-title-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.fs-main-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fs-text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.fs-sub-title {
+  font-size: 11px;
+  color: var(--fs-text-muted);
+  font-weight: 500;
+  margin: 0;
+}
+
+.fs-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.fs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: var(--fs-radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.fs-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.fs-badge-healthy {
+  background: var(--fs-healthy-bg);
+  color: var(--fs-healthy-text);
+  border: 1px solid var(--fs-healthy-border);
+}
+.fs-badge-healthy .fs-badge-dot { background: var(--fs-healthy); }
+
+.fs-badge-critical {
+  background: var(--fs-critical-bg);
+  color: var(--fs-critical-text);
+  border: 1px solid var(--fs-critical-border);
+}
+.fs-badge-critical .fs-badge-dot { background: var(--fs-critical); }
+
+.fs-badge-warning {
+  background: var(--fs-warning-bg);
+  color: var(--fs-warning-text);
+  border: 1px solid var(--fs-warning-border);
+}
+.fs-badge-warning .fs-badge-dot { background: var(--fs-warning); }
+
+.fs-badge-neutral {
+  background: var(--fs-surface-alt);
+  color: var(--fs-text-secondary);
+  border: 1px solid var(--fs-border);
+}
+
+/* Primary Navigation Bar */
+.fs-nav-bar {
+  background: var(--fs-surface);
+  border-bottom: 1px solid var(--fs-border);
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+}
+
+.fs-nav-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fs-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.fs-nav-item:hover {
+  color: var(--fs-text-primary);
+  background: var(--fs-canvas);
+}
+
+.fs-nav-item.active {
+  color: var(--fs-accent-blue);
+  border-bottom: 2px solid var(--fs-accent-blue);
+  font-weight: 600;
+}
+
+/* KPI Banner Strip */
+.fs-kpi-strip {
+  background: var(--fs-surface);
+  border-bottom: 1px solid var(--fs-border);
+  padding: 12px 24px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.fs-kpi-card {
+  border-right: 1px solid var(--fs-border);
+  padding-right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.fs-kpi-card:last-child {
+  border-right: none;
+}
+
+.fs-kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: var(--fs-text-muted);
+}
+
+.fs-kpi-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.fs-kpi-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fs-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.fs-kpi-subtext {
+  font-size: 11px;
+  color: var(--fs-text-muted);
+}
+
+/* Workspace Layout */
+.fs-workspace {
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 20px;
+  max-width: 1720px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+  .fs-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Structured Panels */
+.fs-panel {
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius);
+  box-shadow: var(--fs-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fs-panel-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--fs-border);
+  background: var(--fs-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fs-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fs-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.fs-panel-body {
+  padding: 16px;
+}
+
+/* Supply Chain Topology Graph Container */
+.fs-topology-container {
+  height: 440px;
+  background: #fbfcfd;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--fs-radius-sm);
+  border: 1px solid var(--fs-border);
+}
+
+.fs-topology-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* SVG Graph Elements */
+.fs-edge {
+  stroke: #cbd5e1;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 2;
+  transition: stroke 0.2s ease;
+}
+
+.fs-edge.active {
+  stroke: var(--fs-accent-blue);
+  stroke-width: 2;
+  stroke-dasharray: none;
+}
+
+.fs-edge.disrupted {
+  stroke: var(--fs-critical);
+  stroke-width: 2;
+  stroke-dasharray: 4 4;
+}
+
+.fs-node-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.fs-node-card:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.08));
+}
+
+.fs-node-rect {
+  fill: #ffffff;
+  stroke: #cbd5e1;
+  stroke-width: 1.2;
+  rx: 5;
+  ry: 5;
+}
+
+.fs-node-rect.disrupted {
+  stroke: var(--fs-critical);
+  stroke-width: 1.8;
+  fill: #fffbfa;
+}
+
+.fs-node-rect.optimal {
+  stroke: var(--fs-healthy);
+  stroke-width: 1.8;
+}
+
+.fs-node-rect.selected {
+  stroke: var(--fs-accent-blue);
+  stroke-width: 2;
+  fill: #f8faff;
+}
+
+.fs-node-title {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--fs-text-primary);
+  font-family: inherit;
+}
+
+.fs-node-meta {
+  font-size: 9.5px;
+  font-weight: 500;
+  fill: var(--fs-text-muted);
+  font-family: inherit;
+}
+
+.fs-node-tag {
+  font-size: 8.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Decision Console (Right Column) */
+.fs-decision-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fs-plan-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.fs-plan-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-sm);
+  background: var(--fs-surface-alt);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: all 0.15s ease;
+}
+
+.fs-plan-tab:hover {
+  border-color: var(--fs-border-subtle);
+  background: var(--fs-surface);
+}
+
+.fs-plan-tab.active {
+  background: var(--fs-surface);
+  border-color: var(--fs-healthy);
+  box-shadow: 0 0 0 1px var(--fs-healthy);
+}
+
+.fs-plan-tab-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fs-text-primary);
+}
+
+.fs-plan-tab-badge {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fs-healthy-text);
+}
+
+/* Metric Rows */
+.fs-metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: var(--fs-surface-alt);
+  padding: 12px;
+  border-radius: var(--fs-radius-sm);
+  border: 1px solid var(--fs-border);
+  margin-bottom: 16px;
+}
+
+.fs-metric-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fs-metric-cell-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fs-text-muted);
+}
+
+.fs-metric-cell-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fs-text-primary);
+}
+
+/* Policy Verification Checklist */
+.fs-policy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.fs-policy-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--fs-surface-alt);
+  border-radius: var(--fs-radius-sm);
+  font-size: 12px;
+}
+
+.fs-policy-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fs-policy-name {
+  font-weight: 500;
+  color: var(--fs-text-primary);
+}
+
+.fs-policy-rule {
+  font-size: 11px;
+  color: var(--fs-text-muted);
+}
+
+/* ERP Transaction Preview Box */
+.fs-erp-preview {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--fs-radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--fs-text-secondary);
+}
+
+.fs-erp-preview-title {
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--fs-text-primary);
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Action Button Bar */
+.fs-action-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.fs-btn {
+  padding: 8px 16px;
+  border-radius: var(--fs-radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.fs-btn-primary {
+  background: var(--fs-healthy);
+  color: #ffffff;
+  border-color: var(--fs-healthy);
+}
+.fs-btn-primary:hover {
+  background: #115e59;
+}
+
+.fs-btn-secondary {
+  background: var(--fs-surface);
+  color: var(--fs-text-secondary);
+  border-color: var(--fs-border-subtle);
+}
+.fs-btn-secondary:hover {
+  background: var(--fs-surface-alt);
+  color: var(--fs-text-primary);
+}
+
+.fs-btn-danger {
+  background: var(--fs-critical-bg);
+  color: var(--fs-critical-text);
+  border-color: var(--fs-critical-border);
+}
+.fs-btn-danger:hover {
+  background: #fee2e2;
+}
+
+/* Lower Section: Parallel Agent Activity & Saga Tracker */
+.fs-bottom-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .fs-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Agent Activity Stream (Table / Event-based) */
+.fs-agent-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.fs-agent-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--fs-surface-alt);
+  color: var(--fs-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.fs-agent-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--fs-border);
+  color: var(--fs-text-secondary);
+  vertical-align: middle;
+}
+
+.fs-agent-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: var(--fs-radius-sm);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.fs-agent-proc { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+.fs-agent-invt { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.fs-agent-logi { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+.fs-agent-prod { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+.fs-agent-risk { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+.fs-agent-optm { background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; }
+
+/* SAGA Process Timeline */
+.fs-saga-pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fs-saga-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.fs-saga-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 11px;
+  bottom: -10px;
+  width: 2px;
+  background: var(--fs-border);
+}
+
+.fs-saga-step.completed:not(:last-child)::after {
+  background: var(--fs-healthy);
+}
+
+.fs-saga-step-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--fs-surface-alt);
+  color: var(--fs-text-muted);
+  border: 1px solid var(--fs-border);
+  z-index: 1;
+}
+
+.fs-saga-step.completed .fs-saga-step-icon {
+  background: var(--fs-healthy);
+  color: #fff;
+  border-color: var(--fs-healthy);
+}
+
+.fs-saga-step.active .fs-saga-step-icon {
+  background: var(--fs-accent-blue);
+  color: #fff;
+  border-color: var(--fs-accent-blue);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+}
+
+.fs-saga-step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fs-saga-step-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fs-text-primary);
+}
+
+.fs-saga-step-desc {
+  font-size: 11px;
+  color: var(--fs-text-muted);
+}
+
+/* Dedicated Tab Screens */
+.fs-tab-screen {
+  padding: 20px 24px;
+  max-width: 1720px;
+  margin: 0 auto;
+}
+
+.fs-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: var(--fs-radius);
+  overflow: hidden;
+  box-shadow: var(--fs-shadow-sm);
+  border: 1px solid var(--fs-border);
+}
+
+.fs-data-table th {
+  background: var(--fs-surface-alt);
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--fs-text-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.fs-data-table td {
+  padding: 12px 14px;
+  font-size: 12.5px;
+  color: var(--fs-text-secondary);
+  border-bottom: 1px solid var(--fs-border);
+}
+
+.fs-data-table tr:hover td {
+  background: #f8fafc;
+}
+
+/* Simulation Comparison Matrix */
+.fs-sim-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.fs-sim-card {
+  background: #ffffff;
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fs-sim-card.recommended {
+  border-color: var(--fs-healthy);
+  box-shadow: 0 0 0 1px var(--fs-healthy), var(--fs-shadow);
+}
