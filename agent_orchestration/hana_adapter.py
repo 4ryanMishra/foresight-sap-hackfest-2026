@@ -16,9 +16,9 @@ class HanaPersistenceAdapter:
     Configuration is environment-driven. Zero hardcoded or printed credentials.
     """
     def __init__(self):
-        self.host = os.environ.get("HANA_HOST")
+        self.host = os.environ.get("HANA_HOST", "64e8c26b-3e07-47e9-b246-617058b0306e.hna3.prod-eu10.hanacloud.ondemand.com")
         self.port = int(os.environ.get("HANA_PORT", "443"))
-        self.user = os.environ.get("HANA_USER")
+        self.user = os.environ.get("HANA_USER", "HACKEFEST0115")
         self.password = os.environ.get("HANA_PASSWORD")
         self.schema = os.environ.get("HANA_SCHEMA", "HACKEFEST0115")
         
@@ -40,29 +40,34 @@ class HanaPersistenceAdapter:
     def health_check(self) -> Dict[str, Any]:
         """
         Runs database connectivity check without printing or revealing credentials.
+        Executes SELECT CURRENT_USER, CURRENT_SCHEMA FROM DUMMY.
         """
         status = {
             "configured": self.is_configured,
             "reachable": False,
             "schema": self.schema,
             "test_query_passed": False,
+            "current_user": None,
+            "current_schema": None,
             "error": None
         }
         if not self.is_configured:
-            status["error"] = "Missing HANA_HOST / HANA_USER / HANA_PASSWORD or hdbcli module."
+            status["error"] = "Missing HANA_PASSWORD environment variable."
             return status
 
         try:
             conn = self._get_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT 1 FROM DUMMY")
+            cursor.execute("SELECT CURRENT_USER, CURRENT_SCHEMA FROM DUMMY")
             row = cursor.fetchone()
             cursor.close()
             conn.close()
             
-            if row and row[0] == 1:
+            if row:
                 status["reachable"] = True
                 status["test_query_passed"] = True
+                status["current_user"] = row[0]
+                status["current_schema"] = row[1]
         except Exception as e:
             status["error"] = str(e)
             

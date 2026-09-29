@@ -14,22 +14,19 @@ def run_hana_health_check():
     adapter = HanaPersistenceAdapter()
     status = adapter.health_check()
 
-    # Credential variable presence check (without leaking secrets)
-    required_vars = ["HANA_HOST", "HANA_USER", "HANA_PASSWORD"]
     print("--- Environment Configuration ---")
-    for var in required_vars:
-        if os.environ.get(var):
-            print(f"[CONFIGURED] {var}")
-        else:
-            print(f"[NOT CONFIGURED] {var}")
-
+    print(f"HANA Host                      : {adapter.host}")
     print(f"HANA Port                      : {adapter.port}")
+    print(f"HANA User                      : {adapter.user}")
     print(f"HANA Schema                    : {adapter.schema}")
+    print(f"HANA Password (Env)            : {'[CONFIGURED]' if os.environ.get('HANA_PASSWORD') else '[NOT CONFIGURED]'}")
 
     print("\n--- Connectivity & Health Status ---")
     print(f"Adapter Configured             : {'YES' if status['configured'] else 'NO'}")
     print(f"HANA Host Reachable            : {'YES' if status['reachable'] else 'NO'}")
-    print(f"SELECT 1 FROM DUMMY Test       : {'PASSED' if status['test_query_passed'] else 'FAILED'}")
+    print(f"Current DB User                : {status.get('current_user') or 'N/A'}")
+    print(f"Current DB Schema              : {status.get('current_schema') or 'N/A'}")
+    print(f"SELECT CURRENT_USER Test       : {'PASSED' if status['test_query_passed'] else 'FAILED'}")
     
     if status['error']:
         print(f"Diagnostic Output / Message    : {status['error']}")
