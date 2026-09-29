@@ -14,7 +14,7 @@
 | **AI Launchpad & GenAI Hub** | ✅ VERIFIED | AI API connection `prism`, Resource Group `default` verified. |
 | **AI Model** | ✅ VERIFIED | `GPT-5.6 Luna` is available and verified. |
 | **SAP Build Work Zone** | ✅ VERIFIED | Verified availability. |
-| **Orchestration Config** | ✅ VERIFIED | `FORESIGHT_Recovery_Orchestration_v1` (ID: 884ae7da-8003-4b37-a312-af0da9125ffc) verified. |
+| **Orchestration Config** | ✅ VERIFIED | `FORESIGHT_Recovery_Orchestration_v1` (ID: `884ae7da-8003-4b37-a312-af0da9125ffc`) verified. |
 | **S/4HANA Connectivity** | 🔴 UNVERIFIED | Live APIs (e.g. PurchaseOrder) not yet confirmed. Using MockS4Adapter. |
 | **Cloud Foundry Deployment** | 🔴 UNVERIFIED | Full BTP deployment access pending. `mta.yaml` prepared. |
 | **SAP Event Mesh** | 🔴 UNVERIFIED | Not yet configured. |
@@ -27,21 +27,35 @@
 | **SAP CAP** | VERIFIED | Node.js / CDS Deployment to BTP | MVP |
 | **SAP HANA Cloud** | VERIFIED | CAP `cds add hana` | MVP |
 | **SAPUI5** | VERIFIED | Served via CAP statically currently | MVP |
-| **SAP Generative AI Hub** | VERIFIED (Config) | Python SDK (`sap-ai-sdk-gen` Orchestration) | MVP |
+| **SAP Generative AI Hub** | VERIFIED (Config) | Python SDK (`sap-ai-sdk-gen>=2.0.0` Orchestration V2) | MVP |
 | **S/4HANA: Read Material/Stock** | UNVERIFIED | OData via BTP Destination / LiveS4Adapter | MVP |
 | **S/4HANA: Read Supplier** | UNVERIFIED | OData via BTP Destination / LiveS4Adapter | MVP |
 | **S/4HANA: Create PO/STO** | UNVERIFIED | OData via BTP Destination / LiveS4Adapter | MVP |
 | **SAP Event Mesh** | UNVERIFIED | AMQP / Webhook | Extension |
 | **SAP Build Work Zone** | VERIFIED | Launchpad Site Deployment | Extension |
 
-## 4. SAP Generative AI Hub Environment Variables
+## 4. SAP Generative AI Hub Integration Specification (Orchestration V2 API)
 
-To activate the real SAP Generative AI Hub integration in the Python orchestrator, the following environment variables must be provided via `.env` or BTP Service Bindings (`VCAP_SERVICES`):
+*   **Target SDK**: `sap-ai-sdk-gen>=2.0.0`
+*   **Orchestration API Version**: **V2** (`gen_ai_hub.orchestration_v2`)
+*   **Exact Imports / Classes Used**:
+    ```python
+    from gen_ai_hub.orchestration_v2.service import OrchestrationService
+    ```
+*   **Target Model**: `GPT-5.6 Luna`
+*   **Orchestration Config ID**: `884ae7da-8003-4b37-a312-af0da9125ffc`
+*   **Resource Group**: `default`
+*   **Orchestration Input Parameter**: `disruption_context`
 
-*   `USE_SAP_AI_HUB=true` (Required to activate the `SapGenAiHubProvider`)
-*   `AICORE_CLIENT_ID` (Required)
-*   `AICORE_CLIENT_SECRET` (Required)
-*   `AICORE_AUTH_URL` (Required)
-*   `AICORE_API_BASE_URL` (Required)
-*   `AICORE_RESOURCE_GROUP` (Optional, defaults to `default`)
-*   `AICORE_ORCHESTRATION_CONFIG_ID` (Optional, defaults to `884ae7da-8003-4b37-a312-af0da9125ffc`)
+### Required Environment Variables
+*   `USE_SAP_AI_HUB=true`
+*   `AICORE_CLIENT_ID` (OAuth client ID)
+*   `AICORE_CLIENT_SECRET` (OAuth client secret)
+*   `AICORE_AUTH_URL` (OAuth token endpoint)
+*   `AICORE_API_BASE_URL` (AI Core REST API root)
+*   `AICORE_RESOURCE_GROUP` (Optional, default: `default`)
+*   `AICORE_ORCHESTRATION_CONFIG_ID` (Optional, default: `884ae7da-8003-4b37-a312-af0da9125ffc`)
+
+### Live Authentication Status
+*   **Live Call Tested**: **NOT RUN** (Missing runtime environment credentials `AICORE_CLIENT_ID` and `AICORE_CLIENT_SECRET`).
+*   **Fallback Mode**: Automatically active (`MockLLMProvider`).

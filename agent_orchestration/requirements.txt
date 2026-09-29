@@ -1,2 +1,3 @@
 pydantic
 asyncio
+sap-ai-sdk-gen>=2.0.0
