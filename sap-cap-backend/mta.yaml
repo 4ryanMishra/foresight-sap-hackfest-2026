@@ -1,7 +1,7 @@
 _schema-version: 3.3.0
 ID: foresight-cap-backend
 version: 1.0.0
-description: "FORESIGHT SAP CAP Backend"
+description: "FORESIGHT SAP CAP Backend & Work Zone UI"
 parameters:
   enable-parallel-deployments: true
 build-parameters:
@@ -35,6 +35,30 @@ modules:
     requires:
       - name: foresight-cap-backend-db
 
+  - name: foresight-ui-deployer
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: foresight-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - foresightui.zip
+          name: foresightui
+          target-path: resources/
+
+  - name: foresightui
+    type: html5
+    path: ../sap-ui5-frontend
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npx ui5 build --clean-dest
+
 resources:
   - name: foresight-cap-backend-db
     type: com.sap.xs.hdi-container
@@ -54,3 +78,13 @@ resources:
           credential-types:
             - "binding-secret"
             - "x509"
+  - name: foresight-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+  - name: foresight-destination-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite

@@ -8,17 +8,41 @@
       "version": "1.0.0"
     },
     "title": "FORESIGHT Decision Console",
-    "description": "Decision and Commitment Control Plane",
+    "description": "Decision and Commitment Control Plane for Autonomous Supply Chains",
+    "crossNavigation": {
+      "inbounds": {
+        "foresight-recovery-mission": {
+          "semanticObject": "SupplyChain",
+          "action": "manageRecovery",
+          "title": "FORESIGHT Recovery Mission",
+          "subTitle": "Decision & Commitment Control Plane",
+          "icon": "sap-icon://clinical-task-tracker"
+        }
+      }
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/foresight/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    },
     "sourceTemplate": {
       "id": "@sap/ux-app-migrator:freestyle",
       "version": "1.33.0",
       "toolsId": "ee8aca93-87d0-46b8-82c9-b904ce3356ff"
     }
   },
+  "sap.cloud": {
+    "public": true,
+    "service": "foresight"
+  },
   "sap.ui": {
     "technology": "UI5",
     "icons": {
-      "icon": "",
+      "icon": "sap-icon://clinical-task-tracker",
       "favIcon": "",
       "phone": "",
       "phone@2": "",
@@ -54,7 +78,8 @@
         }
       },
       "": {
-        "type": "sap.ui.model.json.JSONModel"
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "mainService"
       }
     },
     "resources": {
@@ -77,7 +102,7 @@
       "routes": [
         {
           "name": "RouteApp",
-          "pattern": "RouteApp",
+          "pattern": "",
           "target": [
             "TargetApp"
           ]

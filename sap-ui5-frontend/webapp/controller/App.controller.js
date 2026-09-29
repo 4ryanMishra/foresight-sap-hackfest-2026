@@ -6,9 +6,9 @@ sap.ui.define([
 ], function (Controller, JSONModel, MessageBox, MessageToast) {
     "use strict";
 
-    var CAP_BASE_URL = window.location.origin.includes(":4004") ?
-        "/odata/v4/foresight" :
-        "http://localhost:4004/odata/v4/foresight";
+    var CAP_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") && window.location.port === "8000" ?
+        "http://localhost:4004/odata/v4/foresight" :
+        "/odata/v4/foresight";
 
     return Controller.extend("foresight.ui.controller.App", {
         onInit: function () {
