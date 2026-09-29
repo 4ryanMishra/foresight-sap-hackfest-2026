@@ -10,100 +10,196 @@
         <pages>
             <Page id="page" title="FORESIGHT — Decision &amp; Commitment Control Plane" class="sapUiResponsiveContentPadding">
                 <headerContent>
-                    <Button text="Trigger Disruption" type="Emphasized" icon="sap-icon://alert" press=".onTriggerDisruption" class="sapUiTinyMarginEnd"/>
-                    <core:HTML content='&lt;div class="fs-badge fs-badge-healthy"&gt;&lt;span class="fs-badge-dot"&gt;&lt;/span&gt;&lt;span&gt;LIVE OPERATIONAL&lt;/span&gt;&lt;/div&gt;' />
-                    <core:HTML content='&lt;div class="fs-badge fs-badge-neutral"&gt;&lt;span&gt;Adapter: S/4HANA (LOCAL_MOCK)&lt;/span&gt;&lt;/div&gt;' />
+                    <Button text="1. Trigger Disruption (SUP-100)" type="Emphasized" icon="sap-icon://alert" press=".onTriggerDisruption" class="sapUiTinyMarginEnd"/>
+                    <Button text="2. Secondary Outage / Replan (SUP-200)" type="Default" icon="sap-icon://chain-link" press=".onReject" class="sapUiTinyMarginEnd"/>
+                    <core:HTML content='&lt;div class="fs-badge fs-badge-healthy"&gt;&lt;span class="fs-badge-dot"&gt;&lt;/span&gt;&lt;span&gt;LIVE RECOVERY MISSION ACTIVE&lt;/span&gt;&lt;/div&gt;' />
+                    <core:HTML content='&lt;div class="fs-badge fs-badge-neutral"&gt;&lt;span&gt;S/4HANA Adapter: LOCAL_MOCK&lt;/span&gt;&lt;/div&gt;' />
                 </headerContent>
                 <content>
-                    <!-- KPI Bar -->
-                    <layout:Grid defaultSpan="XL2 L2 M4 S6" class="sapUiTinyMarginBottom">
-                        <VBox class="fs-panel sapUiTinyMargin">
-                            <Text text="ACTIVE DISRUPTION" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="{= ${/kpi/disruption} || 'SUP-001 (Critical)'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
-                        </VBox>
-                        <VBox class="fs-panel sapUiTinyMargin">
-                            <Text text="AFFECTED MATERIAL" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="{= ${/kpi/material} || 'MAT-100 (5,000 PC)'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
-                        </VBox>
-                        <VBox class="fs-panel sapUiTinyMargin">
-                            <Text text="RECOMMENDED COST" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="{= ${/kpi/cost} || '$157,000'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
-                        </VBox>
-                        <VBox class="fs-panel sapUiTinyMargin">
-                            <Text text="SERVICE IMPACT" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="{= ${/kpi/service} || '0 Days Delay (SLA Met)'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
-                        </VBox>
-                        <VBox class="fs-panel sapUiTinyMargin">
-                            <Text text="COMMITMENT RISK" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="{= ${/kpi/risk} || '$23,550 (15%)'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
-                        </VBox>
-                        <VBox class="fs-panel sapUiTinyMargin">
-                            <Text text="GOVERNANCE GATE" class="fs-kpi-label sapUiTinyMarginTop sapUiTinyMarginBegin"/>
-                            <Title text="{= ${/kpi/gate} || 'Pending Approval'}" level="H4" class="sapUiTinyMarginBegin sapUiTinyMarginBottom" titleStyle="H4"/>
-                        </VBox>
-                    </layout:Grid>
 
-                    <!-- Main Workspace Tab Container -->
+                    <!-- RECOVERY CASE HEADER BANNER -->
+                    <VBox class="fs-panel sapUiTinyMarginBottom">
+                        <HBox justifyContent="SpaceBetween" alignItems="Center" class="fs-panel-header">
+                            <HBox alignItems="Center">
+                                <core:Icon src="sap-icon://clinical-task-tracker" size="1.2rem" class="sapUiTinyMarginEnd" color="#1d4ed8"/>
+                                <VBox>
+                                    <HBox alignItems="Center">
+                                        <Title text="RECOVERY CASE: RX-1042" level="H3" class="sapUiTinyMarginEnd"/>
+                                        <ObjectStatus text="{= ${/kpi/gate} || 'PLAN PROPOSED'}" state="{= ${/plan/status} === 'EXECUTED' ? 'Success' : ${/plan/status} === 'REPLANNED' ? 'Warning' : 'Error'}" class="sapUiTinyMarginEnd"/>
+                                        <ObjectStatus text="PRIORITY: CRITICAL" state="Error"/>
+                                    </HBox>
+                                    <Text text="Primary Disruption: Supplier SUP-100 failed to confirm 5,000 PC of MAT-100 • Target SLA Deadline: 2026-10-15" class="fs-kpi-subtext"/>
+                                </VBox>
+                            </HBox>
+                            <HBox alignItems="Center">
+                                <VBox alignItems="End" class="sapUiMediumMarginEnd">
+                                    <Text text="OPTIMAL RECOVERY COST" class="fs-kpi-label"/>
+                                    <Title text="{= ${/kpi/cost} || '$157,000'}" level="H4"/>
+                                </VBox>
+                                <VBox alignItems="End" class="sapUiMediumMarginEnd">
+                                    <Text text="COMMITMENT RISK" class="fs-kpi-label"/>
+                                    <Title text="{= ${/kpi/risk} || '$23,550 (15%)'}" level="H4"/>
+                                </VBox>
+                                <VBox alignItems="End">
+                                    <Text text="SERVICE DELAY" class="fs-kpi-label"/>
+                                    <Title text="{= ${/kpi/service} || '0 Days (SLA Met)'}" level="H4"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+
+                        <!-- MISSION PIPELINE STEPPER -->
+                        <VBox class="sapUiTinyMargin">
+                            <core:HTML content='&lt;div class="fs-mission-stepper"&gt;&lt;div class="fs-step completed"&gt;&lt;span class="step-num"&gt;1&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;DISRUPTION&lt;/span&gt;&lt;span class="step-sub"&gt;SUP-100 Outage&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step completed"&gt;&lt;span class="step-num"&gt;2&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;RECOVERY PACKET&lt;/span&gt;&lt;span class="step-sub"&gt;Case RX-1042&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step completed"&gt;&lt;span class="step-num"&gt;3&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;REALITY&lt;/span&gt;&lt;span class="step-sub"&gt;95% Confidence&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step completed"&gt;&lt;span class="step-num"&gt;4&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;IMPACT&lt;/span&gt;&lt;span class="step-sub"&gt;CUST-882 Radius&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step completed"&gt;&lt;span class="step-num"&gt;5&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;AGENT SWARM&lt;/span&gt;&lt;span class="step-sub"&gt;5 Parallel Artifacts&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step completed"&gt;&lt;span class="step-num"&gt;6&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;OPTIMIZATION&lt;/span&gt;&lt;span class="step-sub"&gt;CP-SAT Optimal&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step active"&gt;&lt;span class="step-num"&gt;7&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;POLICY GATE&lt;/span&gt;&lt;span class="step-sub"&gt;Human Gate Active&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step"&gt;&lt;span class="step-num"&gt;8&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;APPROVAL&lt;/span&gt;&lt;span class="step-sub"&gt;Executive Sign-off&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step"&gt;&lt;span class="step-num"&gt;9&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;SAP COMMIT&lt;/span&gt;&lt;span class="step-sub"&gt;PO &amp;amp; STO Creation&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-step"&gt;&lt;span class="step-num"&gt;10&lt;/span&gt;&lt;div class="step-info"&gt;&lt;span class="step-title"&gt;SAGA REPLAN&lt;/span&gt;&lt;span class="step-sub"&gt;Compensation Loop&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;' />
+                        </VBox>
+                    </VBox>
+
+                    <!-- MAIN WORKSPACE TAB CONTAINER -->
                     <IconTabBar id="idIconTabBar" class="sapUiResponsiveContentPadding" expandable="false">
                         <items>
-                            <!-- Tab 1: Decision Console -->
-                            <IconTabFilter text="Decision Console" key="overview" icon="sap-icon://chart-table-view">
+                            <!-- TAB 1: RECOVERY MISSION CONSOLE -->
+                            <IconTabFilter text="Recovery Mission Console" key="mission" icon="sap-icon://target-group">
                                 <layout:Grid defaultSpan="XL8 L7 M12 S12">
-                                    <!-- Left: Supply Chain Knowledge Topology -->
+
+                                    <!-- LEFT: REALITY & IMPACT TOPOLOGY GRAPH -->
                                     <VBox class="fs-panel">
                                         <HBox justifyContent="SpaceBetween" alignItems="Center" class="fs-panel-header">
-                                            <Title text="Supply Chain Knowledge Topology &amp; Disruption Blast Radius" level="H5" class="fs-panel-title"/>
+                                            <VBox>
+                                                <Title text="Operational Reality &amp; Impact Radius Tracing" level="H5" class="fs-panel-title"/>
+                                                <Text text="Supplier → Material → Plant → Inventory → Production → Logistics → Customer" class="fs-kpi-subtext"/>
+                                            </VBox>
+                                            <ObjectStatus text="VERIFIED: 95% CONFIDENCE" state="Success"/>
                                         </HBox>
-                                        <core:HTML content='&lt;div class="fs-topology-container"&gt;&lt;svg class="fs-topology-svg" viewBox="0 0 920 420"&gt;&lt;path d="M 180 80 L 340 180" class="fs-edge disrupted"/&gt;&lt;path d="M 180 200 L 340 200" class="fs-edge active"/&gt;&lt;path d="M 180 320 L 340 220" class="fs-edge"/&gt;&lt;path d="M 490 190 L 610 130" class="fs-edge active"/&gt;&lt;path d="M 490 210 L 610 270" class="fs-edge active"/&gt;&lt;rect x="30" y="45" width="150" height="65" class="fs-node-rect disrupted"/&gt;&lt;text x="42" y="70" class="fs-node-title"&gt;SUP-001 (Outage)&lt;/text&gt;&lt;rect x="30" y="165" width="150" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="42" y="190" class="fs-node-title"&gt;SUP-002 (Recommended)&lt;/text&gt;&lt;rect x="340" y="165" width="150" height="70" class="fs-node-rect selected"/&gt;&lt;text x="352" y="190" class="fs-node-title"&gt;MAT-100 (Shortage)&lt;/text&gt;&lt;rect x="610" y="100" width="140" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="622" y="125" class="fs-node-title"&gt;PLANT-A (Austin)&lt;/text&gt;&lt;rect x="610" y="235" width="140" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="622" y="260" class="fs-node-title"&gt;PLANT-B (Depot)&lt;/text&gt;&lt;/svg&gt;&lt;/div&gt;' />
+                                        <core:HTML content='&lt;div class="fs-topology-container"&gt;&lt;svg class="fs-topology-svg" viewBox="0 0 920 400"&gt;&lt;path d="M 170 80 L 330 180" class="fs-edge disrupted"/&gt;&lt;path d="M 170 200 L 330 200" class="fs-edge active"/&gt;&lt;path d="M 330 200 L 490 140" class="fs-edge active"/&gt;&lt;path d="M 330 200 L 490 260" class="fs-edge active"/&gt;&lt;path d="M 490 140 L 670 180" class="fs-edge active"/&gt;&lt;path d="M 490 260 L 670 200" class="fs-edge active"/&gt;&lt;path d="M 670 190 L 810 190" class="fs-edge active"/&gt;&lt;rect x="20" y="45" width="150" height="70" class="fs-node-rect disrupted"/&gt;&lt;text x="32" y="70" class="fs-node-title"&gt;SUP-100 (Primary Outage)&lt;/text&gt;&lt;text x="32" y="90" class="fs-node-sub"&gt;5,000 PC Shortage&lt;/text&gt;&lt;rect x="20" y="165" width="150" height="70" class="fs-node-rect optimal"/&gt;&lt;text x="32" y="190" class="fs-node-title"&gt;SUP-200 (Alternative)&lt;/text&gt;&lt;text x="32" y="210" class="fs-node-sub"&gt;Cap: 10,000 PC • Low Risk&lt;/text&gt;&lt;rect x="330" y="165" width="160" height="70" class="fs-node-rect selected"/&gt;&lt;text x="342" y="190" class="fs-node-title"&gt;MAT-100 (Disrupted Part)&lt;/text&gt;&lt;text x="342" y="210" class="fs-node-sub"&gt;Critical Component&lt;/text&gt;&lt;rect x="490" y="105" width="150" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="502" y="130" class="fs-node-title"&gt;PLANT-A (Austin)&lt;/text&gt;&lt;text x="502" y="150" class="fs-node-sub"&gt;Transfer: 500 PC&lt;/text&gt;&lt;rect x="490" y="225" width="150" height="65" class="fs-node-rect optimal"/&gt;&lt;text x="502" y="250" class="fs-node-title"&gt;PLANT-B (Depot)&lt;/text&gt;&lt;text x="502" y="270" class="fs-node-sub"&gt;Transfer: 1,200 PC&lt;/text&gt;&lt;rect x="670" y="155" width="130" height="70" class="fs-node-rect optimal"/&gt;&lt;text x="682" y="180" class="fs-node-title"&gt;Route B (Logistics)&lt;/text&gt;&lt;text x="682" y="200" class="fs-node-sub"&gt;Expedited Air Freight&lt;/text&gt;&lt;rect x="810" y="155" width="100" height="70" class="fs-node-rect optimal"/&gt;&lt;text x="818" y="180" class="fs-node-title"&gt;CUST-882&lt;/text&gt;&lt;text x="818" y="200" class="fs-node-sub"&gt;SLA Shielded&lt;/text&gt;&lt;/svg&gt;&lt;/div&gt;' />
                                     </VBox>
 
-                                    <!-- Right: Decision & Commitment Console -->
+                                    <!-- RIGHT: CANDIDATE RECOVERY PLAN & HUMAN APPROVAL GATE -->
                                     <VBox class="fs-panel" layout:GridData="{span: 'XL4 L5 M12 S12'}">
                                         <HBox justifyContent="SpaceBetween" alignItems="Center" class="fs-panel-header">
-                                            <Title text="Autonomous Recovery Proposal" level="H5" class="fs-panel-title"/>
-                                            <ObjectStatus text="CP-SAT OPTIMAL" state="Success"/>
+                                            <VBox>
+                                                <Title text="Recovery Plan RP-07" level="H5" class="fs-panel-title"/>
+                                                <Text text="CP-SAT Mixed Integer Programming Result" class="fs-kpi-subtext"/>
+                                            </VBox>
+                                            <ObjectStatus text="STATUS: FEASIBLE" state="Success"/>
                                         </HBox>
                                         <VBox class="fs-panel-body">
-                                            <Text text="Plan A (Balanced Recovery - Recommended)" class="sapUiTinyMarginBottom" style="font-weight:600;"/>
-                                            <List>
-                                                <DisplayListItem label="Total Execution Cost" value="{= ${/plan/cost} || '$157,000'}" />
-                                                <DisplayListItem label="SLA Delivery Delay" value="{= ${/plan/service} || '0 Days (SLA Met)'}" />
-                                                <DisplayListItem label="Commitment Risk Index" value="{= ${/plan/risk} || '$23,550 (15%)'}" />
-                                                <DisplayListItem label="P95 Lead Time" value="{= ${/plan/leadTime} || '6.7 Days'}" />
-                                                <DisplayListItem label="Policy Validation" value="{= ${/plan/policy} || '3/3 Passed (Human Gate Active)'}" />
+
+                                            <!-- METRICS MATRIX -->
+                                            <List showSeparators="Inner">
+                                                <DisplayListItem label="[OPTIMIZATION] Total Cost" value="{= ${/plan/cost} || '$157,000'}" />
+                                                <DisplayListItem label="[OPTIMIZATION] Service Impact" value="{= ${/plan/service} || '0 Days Delay (SLA Met)'}" />
+                                                <DisplayListItem label="[RISK AGENT] Commitment Risk" value="{= ${/plan/risk} || '$23,550 (15%)'}" />
+                                                <DisplayListItem label="[LOGISTICS] P95 Delivery SLA" value="{= ${/plan/leadTime} || '6.7 Days'}" />
+                                                <DisplayListItem label="[POLICY GATE] Governance Status" value="{= ${/plan/policy} || '3/3 Passed (Human Approval Active)'}" />
                                             </List>
 
-                                            <!-- S/4 Preview -->
+                                            <!-- STAGED SAP TRANSACTIONS -->
                                             <VBox class="fs-erp-preview sapUiSmallMarginTop">
-                                                <Text text="STAGED SAP S/4HANA ACTIONS" style="font-weight:700;"/>
+                                                <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMarginBottom">
+                                                    <Text text="STAGED S/4HANA ENTERPRISE TRANSACTIONS" style="font-weight:700; font-size:11px; color:#1e40af;"/>
+                                                    <ObjectStatus text="ACTION STAGED" state="Information"/>
+                                                </HBox>
                                                 <List items="{/stagedActions}" showSeparators="None">
-                                                    <StandardListItem title="{text}" />
+                                                    <StandardListItem title="{text}" icon="sap-icon://sap-box" />
                                                 </List>
                                             </VBox>
 
-                                            <!-- Action Buttons -->
-                                            <HBox class="sapUiSmallMarginTop" justifyContent="End">
-                                                <Button text="Reject / Replan" type="Reject" press=".onReject" class="sapUiTinyMarginEnd"/>
-                                                <Button text="Simulate Scenarios" press=".onSimulate" class="sapUiTinyMarginEnd"/>
-                                                <Button text="Approve Recovery Plan" type="Emphasized" press=".onApprove"/>
-                                            </HBox>
+                                            <!-- HUMAN APPROVAL INTERACTION BOX -->
+                                            <VBox class="fs-approval-box sapUiSmallMarginTop">
+                                                <Text text="HUMAN APPROVAL REQUIRED" style="font-weight:700; color:#92400e; font-size:12px;"/>
+                                                <Text text="Policy Rule POL-104: Recovery expenditure exceeds $100,000 threshold. Requires explicit Operations Manager sign-off before committing to S/4HANA." class="sapUiTinyMarginTop" style="font-size:12px; color:#451a03;"/>
+                                                
+                                                <HBox class="sapUiMediumMarginTop" justifyContent="End">
+                                                    <Button text="Reject / Trigger Replan" type="Reject" icon="sap-icon://cancel" press=".onReject" class="sapUiTinyMarginEnd"/>
+                                                    <Button text="Simulate Scenarios" icon="sap-icon://bar-chart" press=".onSimulate" class="sapUiTinyMarginEnd"/>
+                                                    <Button text="Approve &amp; Commit to S/4HANA" type="Emphasized" icon="sap-icon://accept" press=".onApprove"/>
+                                                </HBox>
+                                            </VBox>
+
                                         </VBox>
                                     </VBox>
                                 </layout:Grid>
 
-                                <!-- Lower Section: Parallel Agent Swarm Telemetry -->
+                                <!-- LOWER SECTION: PARALLEL AGENT SWARM DECISION ARTIFACTS -->
                                 <VBox class="fs-panel sapUiMediumMarginTop">
                                     <HBox justifyContent="SpaceBetween" alignItems="Center" class="fs-panel-header">
-                                        <Title text="Parallel Agent Swarm Telemetry (Concurrent Execution)" level="H5" class="fs-panel-title"/>
-                                        <Text text="6 Agents Concurrent • 42ms Gather" class="fs-kpi-subtext"/>
+                                        <VBox>
+                                            <Title text="Parallel Agent Swarm Decision Artifacts Attached to Case RX-1042" level="H5" class="fs-panel-title"/>
+                                            <Text text="Procurement • Inventory • Logistics • Production • Risk (Concurrent Execution Engine)" class="fs-kpi-subtext"/>
+                                        </VBox>
+                                        <ObjectStatus text="5 ARTIFACTS GENERATED (42ms)" state="Success"/>
                                     </HBox>
-                                    <Table id="telemetryTable" items="{/telemetry}">
+
+                                    <!-- AGENT CARDS GRID -->
+                                    <layout:Grid defaultSpan="XL2 L2 M4 S12" class="sapUiTinyMargin">
+                                        <VBox class="fs-agent-card">
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMarginBottom">
+                                                <Text text="PROCUREMENT" style="font-weight:700; font-size:11px; color:#1d4ed8;"/>
+                                                <ObjectStatus text="95%" state="Success"/>
+                                            </HBox>
+                                            <Text text="SUP-200 / 3,300 PC" style="font-weight:700; font-size:13px;" class="sapUiTinyMarginBottom"/>
+                                            <Text text="Unit Cost: $45.00. Vendor verified low-risk with immediate capacity allocation." class="fs-kpi-subtext"/>
+                                            <ObjectStatus text="[AI RECOMMENDATION]" state="Information" class="sapUiTinyMarginTop"/>
+                                        </VBox>
+
+                                        <VBox class="fs-agent-card">
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMarginBottom">
+                                                <Text text="INVENTORY" style="font-weight:700; font-size:11px; color:#0f766e;"/>
+                                                <ObjectStatus text="100%" state="Success"/>
+                                            </HBox>
+                                            <Text text="Transfer 1,700 PC" style="font-weight:700; font-size:13px;" class="sapUiTinyMarginBottom"/>
+                                            <Text text="1,200 PC Plant B + 500 PC Plant A. Temporary stock holds placed." class="fs-kpi-subtext"/>
+                                            <ObjectStatus text="[AI RECOMMENDATION]" state="Information" class="sapUiTinyMarginTop"/>
+                                        </VBox>
+
+                                        <VBox class="fs-agent-card">
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMarginBottom">
+                                                <Text text="LOGISTICS" style="font-weight:700; font-size:11px; color:#d97706;"/>
+                                                <ObjectStatus text="92%" state="Success"/>
+                                            </HBox>
+                                            <Text text="Expedited Route B" style="font-weight:700; font-size:13px;" class="sapUiTinyMarginBottom"/>
+                                            <Text text="Air Freight dispatch from Austin hub. SLA Lead-time: 6.7 Days." class="fs-kpi-subtext"/>
+                                            <ObjectStatus text="[AI RECOMMENDATION]" state="Information" class="sapUiTinyMarginTop"/>
+                                        </VBox>
+
+                                        <VBox class="fs-agent-card">
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMarginBottom">
+                                                <Text text="PRODUCTION" style="font-weight:700; font-size:11px; color:#475569;"/>
+                                                <ObjectStatus text="98%" state="Success"/>
+                                            </HBox>
+                                            <Text text="Line 2 Scheduling" style="font-weight:700; font-size:13px;" class="sapUiTinyMarginBottom"/>
+                                            <Text text="Dynamic BOM component substitution verified. Capacity compatible." class="fs-kpi-subtext"/>
+                                            <ObjectStatus text="[AI RECOMMENDATION]" state="Information" class="sapUiTinyMarginTop"/>
+                                        </VBox>
+
+                                        <VBox class="fs-agent-card">
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMarginBottom">
+                                                <Text text="RISK &amp; POLICY" style="font-weight:700; font-size:11px; color:#dc2626;"/>
+                                                <ObjectStatus text="100%" state="Success"/>
+                                            </HBox>
+                                            <Text text="Exposure: $23,550" style="font-weight:700; font-size:13px;" class="sapUiTinyMarginBottom"/>
+                                            <Text text="Customer CUST-882 shielded. Policy POL-104 triggered ($100K+ gate)." class="fs-kpi-subtext"/>
+                                            <ObjectStatus text="[POLICY DECISION]" state="Warning" class="sapUiTinyMarginTop"/>
+                                        </VBox>
+
+                                        <VBox class="fs-agent-card">
+                                            <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMarginBottom">
+                                                <Text text="OPTIMIZATION" style="font-weight:700; font-size:11px; color:#1d4ed8;"/>
+                                                <ObjectStatus text="100%" state="Success"/>
+                                            </HBox>
+                                            <Text text="Plan RP-07 Feasible" style="font-weight:700; font-size:13px;" class="sapUiTinyMarginBottom"/>
+                                            <Text text="Formulated CP-SAT mathematical model in 42ms. Cost: $157,000." class="fs-kpi-subtext"/>
+                                            <ObjectStatus text="[OPTIMIZATION RESULT]" state="Success" class="sapUiTinyMarginTop"/>
+                                        </VBox>
+                                    </layout:Grid>
+
+                                    <!-- AGENT TELEMETRY TABLE -->
+                                    <Table id="telemetryTable" items="{/telemetry}" class="sapUiTinyMarginTop">
                                         <columns>
-                                            <Column width="90px"><Text text="Time" /></Column>
+                                            <Column width="100px"><Text text="Time" /></Column>
                                             <Column width="160px"><Text text="Agent" /></Column>
-                                            <Column width="180px"><Text text="Tool / Action" /></Column>
-                                            <Column><Text text="Quantified Evidence &amp; Findings" /></Column>
-                                            <Column width="100px"><Text text="Confidence" /></Column>
+                                            <Column width="180px"><Text text="Action / Tool" /></Column>
+                                            <Column><Text text="Decision Artifact &amp; Quantified Evidence" /></Column>
+                                            <Column width="110px"><Text text="Confidence" /></Column>
                                         </columns>
                                         <items>
                                             <ColumnListItem>
@@ -120,31 +216,37 @@
                                 </VBox>
                             </IconTabFilter>
 
-                            <!-- Tab 2: SAGA Timeline -->
-                            <IconTabFilter text="Execution &amp; SAGA" key="execution" icon="sap-icon://process">
+                            <!-- TAB 2: SAGA EXECUTION & COMPENSATION TIMELINE -->
+                            <IconTabFilter text="SAGA Compensation &amp; Execution" key="execution" icon="sap-icon://process">
                                 <VBox class="fs-panel">
                                     <HBox justifyContent="SpaceBetween" alignItems="Center" class="fs-panel-header">
-                                        <Title text="SAGA Dual-Phase Orchestration &amp; Compensating Transaction Engine" level="H5"/>
+                                        <VBox>
+                                            <Title text="SAGA Dual-Phase Commitment &amp; Replan Engine" level="H5"/>
+                                            <Text text="Dual-Phase Commit • Temporary Stock Holds • Automatic Compensation on Invalidation" class="fs-kpi-subtext"/>
+                                        </VBox>
                                     </HBox>
                                     <VBox class="fs-panel-body">
-                                        <core:HTML content='&lt;div class="fs-saga-pipeline"&gt;&lt;div class="fs-saga-step completed"&gt;&lt;div class="fs-saga-step-icon"&gt;&amp;#10003;&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title"&gt;1. Disruption Intent Registered&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;DISRUPT-101 recorded in SAP HANA Cloud ledger with Bayesian proof.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-saga-step completed"&gt;&lt;div class="fs-saga-step-icon"&gt;&amp;#10003;&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title"&gt;2. Temporary Holds Placed&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;1,200 units reserved in Plant B. Hold expires in 2 hrs if unapproved.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-saga-step completed"&gt;&lt;div class="fs-saga-step-icon"&gt;&amp;#10003;&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title"&gt;3. Policy-as-Code Validation&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;CP-SAT feasibility confirmed ($157K). Customer commitment CUST-882 shielded.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-saga-step active"&gt;&lt;div class="fs-saga-step-icon"&gt;4&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title" style="color:#1d4ed8;"&gt;4. Executive Approval Gate&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;Awaiting signature from Supply Chain Operations Executive.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-saga-step"&gt;&lt;div class="fs-saga-step-icon"&gt;5&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title"&gt;5. S/4HANA Commit Execution&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;Execute PO-SIM-9482 and internal Stock Transport Order.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;' />
+                                        <core:HTML content='&lt;div class="fs-saga-pipeline"&gt;&lt;div class="fs-saga-step completed"&gt;&lt;div class="fs-saga-step-icon"&gt;&amp;#10003;&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title"&gt;1. Disruption Intent Registered&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;Case RX-1042 recorded in SAP HANA Cloud ledger with Bayesian proof.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-saga-step completed"&gt;&lt;div class="fs-saga-step-icon"&gt;&amp;#10003;&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title"&gt;2. Temporary Holds Placed&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;1,200 PC reserved in Plant B. Hold expires in 2 hrs if unapproved.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-saga-step completed"&gt;&lt;div class="fs-saga-step-icon"&gt;&amp;#10003;&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title"&gt;3. Policy-as-Code Validation&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;CP-SAT feasibility confirmed ($157K). Customer commitment CUST-882 shielded.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-saga-step active"&gt;&lt;div class="fs-saga-step-icon"&gt;4&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title" style="color:#1d4ed8;"&gt;4. Executive Approval Gate&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;Awaiting signature from Supply Chain Operations Executive.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="fs-saga-step"&gt;&lt;div class="fs-saga-step-icon"&gt;5&lt;/div&gt;&lt;div class="fs-saga-step-content"&gt;&lt;span class="fs-saga-step-title"&gt;5. S/4HANA Commit Execution&lt;/span&gt;&lt;span class="fs-saga-step-desc"&gt;Execute PO-SIM-9482 and internal Stock Transport Order.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;' />
                                     </VBox>
                                 </VBox>
                             </IconTabFilter>
 
-                            <!-- Tab 3: Audit Trail -->
-                            <IconTabFilter text="Audit Trail" key="audit" icon="sap-icon://history">
+                            <!-- TAB 3: AUDIT TRAIL & GOVERNANCE LEDGER -->
+                            <IconTabFilter text="Enterprise Governance Audit Trail" key="audit" icon="sap-icon://history">
                                 <VBox class="fs-panel">
                                     <HBox justifyContent="SpaceBetween" alignItems="Center" class="fs-panel-header">
-                                        <Title text="Enterprise Governance &amp; Decision Audit Log (SAP HANA Cloud)" level="H5"/>
+                                        <VBox>
+                                            <Title text="Enterprise Governance &amp; Decision Audit Log (SAP HANA Cloud)" level="H5"/>
+                                            <Text text="Immutable audit ledger tracking Disruption, Swarm Findings, Policy Gates, Approvals &amp; S/4 Commits" class="fs-kpi-subtext"/>
+                                        </VBox>
                                     </HBox>
                                     <Table items="{/audit}">
                                         <columns>
                                             <Column width="160px"><Text text="Timestamp (UTC)" /></Column>
-                                            <Column width="140px"><Text text="Actor" /></Column>
-                                            <Column width="180px"><Text text="Event Type" /></Column>
-                                            <Column><Text text="Evidence &amp; Context" /></Column>
-                                            <Column width="140px"><Text text="Target Entity" /></Column>
+                                            <Column width="140px"><Text text="Actor / Component" /></Column>
+                                            <Column width="180px"><Text text="Event Category" /></Column>
+                                            <Column><Text text="Evidence, Action &amp; Context" /></Column>
+                                            <Column width="160px"><Text text="Target Entity" /></Column>
                                         </columns>
                                         <items>
                                             <ColumnListItem>

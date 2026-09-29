@@ -762,3 +762,94 @@ html, body, #content, .sapUiBody {
   border-color: var(--fs-healthy);
   box-shadow: 0 0 0 1px var(--fs-healthy), var(--fs-shadow);
 }
+
+/* Mission Pipeline Stepper */
+.fs-mission-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--fs-surface-alt);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+  padding: 10px 16px;
+  overflow-x: auto;
+  gap: 8px;
+}
+
+.fs-mission-stepper .fs-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.fs-mission-stepper .fs-step.completed,
+.fs-mission-stepper .fs-step.active {
+  opacity: 1;
+}
+
+.fs-mission-stepper .step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fs-mission-stepper .fs-step.completed .step-num {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.fs-mission-stepper .fs-step.active .step-num {
+  background: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.2);
+}
+
+.fs-mission-stepper .step-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.fs-mission-stepper .step-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--fs-text-primary);
+}
+
+.fs-mission-stepper .step-sub {
+  font-size: 10px;
+  color: var(--fs-text-muted);
+}
+
+/* Agent Artifact Card */
+.fs-agent-card {
+  background: #ffffff;
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-radius-md);
+  padding: 12px 14px;
+  box-shadow: var(--fs-shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fs-agent-card:hover {
+  border-color: var(--fs-border-focus);
+  box-shadow: var(--fs-shadow-md);
+}
+
+/* Human Approval Box */
+.fs-approval-box {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--fs-radius-md);
+  padding: 14px;
+  box-shadow: var(--fs-shadow-sm);
+}
