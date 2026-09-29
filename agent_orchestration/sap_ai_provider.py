@@ -31,7 +31,9 @@ class SapGenAiHubProvider(LLMProvider):
         )
         
         if self.is_configured and OrchestrationService is not None:
+            # Initialize OrchestrationService targeting existing configuration and resource group
             self.service = OrchestrationService(
+                config_id=self.config_id,
                 resource_group=self.resource_group
             )
         else:
@@ -47,10 +49,9 @@ class SapGenAiHubProvider(LLMProvider):
         print(f"[SapGenAiHubProvider] Executing Orchestration V2 Config {self.config_id} on RG {self.resource_group}")
         
         try:
-            # Using Orchestration V2 API
+            # Using Orchestration V2 API with placeholder_values for template input
             response = self.service.run(
-                config_id=self.config_id,
-                input_params={
+                placeholder_values={
                     "disruption_context": prompt
                 }
             )
