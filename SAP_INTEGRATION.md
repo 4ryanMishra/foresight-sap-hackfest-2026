@@ -14,7 +14,7 @@
 | **AI Launchpad & GenAI Hub** | ✅ VERIFIED | AI API connection `prism`, Resource Group `default` verified. |
 | **AI Model** | ✅ VERIFIED | `GPT-5.6 Luna` is available and verified. |
 | **SAP Build Work Zone** | ✅ VERIFIED | Verified availability. |
-| **Orchestration Config** | ✅ VERIFIED | `FORESIGHT_Recovery_Orchestration_v1` verified. |
+| **Orchestration Config** | ✅ VERIFIED | `FORESIGHT_Recovery_Orchestration_v1` (ID: 884ae7da-8003-4b37-a312-af0da9125ffc) verified. |
 | **S/4HANA Connectivity** | 🔴 UNVERIFIED | Live APIs (e.g. PurchaseOrder) not yet confirmed. Using MockS4Adapter. |
 | **Cloud Foundry Deployment** | 🔴 UNVERIFIED | Full BTP deployment access pending. `mta.yaml` prepared. |
 | **SAP Event Mesh** | 🔴 UNVERIFIED | Not yet configured. |
@@ -27,9 +27,21 @@
 | **SAP CAP** | VERIFIED | Node.js / CDS Deployment to BTP | MVP |
 | **SAP HANA Cloud** | VERIFIED | CAP `cds add hana` | MVP |
 | **SAPUI5** | VERIFIED | Served via CAP statically currently | MVP |
-| **SAP Generative AI Hub** | VERIFIED (Config) | Python SDK (SapGenAiHubProvider) | MVP |
+| **SAP Generative AI Hub** | VERIFIED (Config) | Python SDK (`sap-ai-sdk-gen` Orchestration) | MVP |
 | **S/4HANA: Read Material/Stock** | UNVERIFIED | OData via BTP Destination / LiveS4Adapter | MVP |
 | **S/4HANA: Read Supplier** | UNVERIFIED | OData via BTP Destination / LiveS4Adapter | MVP |
 | **S/4HANA: Create PO/STO** | UNVERIFIED | OData via BTP Destination / LiveS4Adapter | MVP |
 | **SAP Event Mesh** | UNVERIFIED | AMQP / Webhook | Extension |
 | **SAP Build Work Zone** | VERIFIED | Launchpad Site Deployment | Extension |
+
+## 4. SAP Generative AI Hub Environment Variables
+
+To activate the real SAP Generative AI Hub integration in the Python orchestrator, the following environment variables must be provided via `.env` or BTP Service Bindings (`VCAP_SERVICES`):
+
+*   `USE_SAP_AI_HUB=true` (Required to activate the `SapGenAiHubProvider`)
+*   `AICORE_CLIENT_ID` (Required)
+*   `AICORE_CLIENT_SECRET` (Required)
+*   `AICORE_AUTH_URL` (Required)
+*   `AICORE_API_BASE_URL` (Required)
+*   `AICORE_RESOURCE_GROUP` (Optional, defaults to `default`)
+*   `AICORE_ORCHESTRATION_CONFIG_ID` (Optional, defaults to `884ae7da-8003-4b37-a312-af0da9125ffc`)

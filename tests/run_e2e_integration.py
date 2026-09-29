@@ -39,8 +39,8 @@ def run_integration():
 
     try:
         # Wait for services to be up
-        print("Waiting 20 seconds for services to initialize...")
-        time.sleep(20)
+        print("Waiting 30 seconds for services to initialize...")
+        time.sleep(30)
 
         print("\n--- TEST 1: Trigger Disruption ---")
         trigger_url = "http://localhost:4004/odata/v4/foresight/triggerDisruption"
