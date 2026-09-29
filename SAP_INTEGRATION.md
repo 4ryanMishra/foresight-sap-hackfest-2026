@@ -42,17 +42,21 @@
     ```python
     from gen_ai_hub.orchestration_v2.service import OrchestrationService
     ```
+*   **Constructor Invocation**:
+    ```python
+    OrchestrationService(config_id=config_id)
+    ```
 *   **Target Model**: `GPT-5.6 Luna`
 *   **Orchestration Config ID**: `884ae7da-8003-4b37-a312-af0da9125ffc`
-*   **Resource Group**: `default`
-*   **Orchestration Input Parameter**: `disruption_context`
+*   **Resource Group**: `default` (Supplied automatically via `AICORE_RESOURCE_GROUP` env var)
+*   **Orchestration Input Parameter**: `placeholder_values={"disruption_context": prompt}`
 
-### Required Environment Variables
+### Required Official SDK Environment Variables
 *   `USE_SAP_AI_HUB=true`
 *   `AICORE_CLIENT_ID` (OAuth client ID)
 *   `AICORE_CLIENT_SECRET` (OAuth client secret)
 *   `AICORE_AUTH_URL` (OAuth token endpoint)
-*   `AICORE_API_BASE_URL` (AI Core REST API root)
+*   `AICORE_BASE_URL` (AI Core REST API base URL including `/v2`)
 *   `AICORE_RESOURCE_GROUP` (Optional, default: `default`)
 *   `AICORE_ORCHESTRATION_CONFIG_ID` (Optional, default: `884ae7da-8003-4b37-a312-af0da9125ffc`)
 

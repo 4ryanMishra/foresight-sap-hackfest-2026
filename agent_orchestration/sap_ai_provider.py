@@ -22,19 +22,19 @@ class SapGenAiHubProvider(LLMProvider):
         self.config_id = os.environ.get('AICORE_ORCHESTRATION_CONFIG_ID', '884ae7da-8003-4b37-a312-af0da9125ffc')
         self.resource_group = os.environ.get('AICORE_RESOURCE_GROUP', 'default')
         
-        # Connection requires standard AICORE environment variables
+        # Connection requires standard AICORE environment variables as documented by SAP Cloud SDK for AI
         self.is_configured = bool(
             os.environ.get("AICORE_CLIENT_ID") and
             os.environ.get("AICORE_CLIENT_SECRET") and
             os.environ.get("AICORE_AUTH_URL") and
-            os.environ.get("AICORE_API_BASE_URL")
+            os.environ.get("AICORE_BASE_URL")
         )
         
         if self.is_configured and OrchestrationService is not None:
-            # Initialize OrchestrationService targeting existing configuration and resource group
+            # Initialize OrchestrationService targeting existing configuration ID.
+            # Resource group is automatically resolved by the SDK via the AICORE_RESOURCE_GROUP environment variable.
             self.service = OrchestrationService(
-                config_id=self.config_id,
-                resource_group=self.resource_group
+                config_id=self.config_id
             )
         else:
             self.service = None

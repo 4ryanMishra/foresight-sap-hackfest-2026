@@ -33,12 +33,12 @@ def run_health_check():
         except ImportError:
             print(f"[WARN] sap-ai-sdk-gen / gen_ai_hub package is NOT INSTALLED or Orchestration V2 is unavailable.")
 
-    # Check for basic AI Core environment variables (Presence check only, zero secrets revealed)
+    # Check for basic AI Core environment variables per official SAP Cloud SDK for AI documentation
     required_vars = [
         "AICORE_CLIENT_ID",
         "AICORE_CLIENT_SECRET",
         "AICORE_AUTH_URL",
-        "AICORE_API_BASE_URL"
+        "AICORE_BASE_URL"
     ]
     
     all_vars_present = True
@@ -57,7 +57,7 @@ def run_health_check():
     print("\n--- Orchestration V2 Settings ---")
     print(f"API Version                    : V2")
     print(f"Orchestration Config ID        : {config_id}")
-    print(f"Resource Group                 : {rg}")
+    print(f"Resource Group (Env)           : {rg}")
     
     print("\n==================================================")
     if all_vars_present and sdk_available:
